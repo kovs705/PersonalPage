@@ -693,8 +693,10 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.03
   transition:background var(--t-hover) var(--ease)}
 .clack .sw::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;
   border-radius:50%;background:var(--paper);transition:transform var(--t-hover) var(--ease)}
-.clack[aria-pressed="true"] .sw{background:var(--lime)}
-.clack[aria-pressed="true"] .sw::after{transform:translateX(11px);background:var(--ink)}
+/* .clack-on on <html> is a pre-paint stamp from the inline anti-flash guard in head.html —
+   it renders the switch correctly before clack.js has run and set aria-pressed itself. */
+.clack[aria-pressed="true"] .sw, .clack-on .clack .sw{background:var(--lime)}
+.clack[aria-pressed="true"] .sw::after, .clack-on .clack .sw::after{transform:translateX(11px);background:var(--ink)}
 
 /* Section labels */
 .lbl{display:flex;justify-content:space-between;gap:var(--s4);
@@ -847,6 +849,14 @@ appears only in the header this task creates.
 ```html
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{%- comment -%}
+  Anti-flash for the clack toggle, same idea as a dark-mode flash guard: read the stored
+  preference and stamp a class on <html> before first paint, so the switch renders in the
+  right position immediately. clack.js (deferred) is still the sole owner of aria-pressed
+  and audio — this just prevents the visible/AT-state mismatch until it runs. localStorage
+  can throw in some privacy modes, hence the try/catch; failure just means default OFF.
+{%- endcomment -%}
+<script>try{if(localStorage.getItem('clack')==='1')document.documentElement.classList.add('clack-on')}catch(e){}</script>
 {%- comment -%}
   fonts.css is linked directly rather than @imported from site.css. A CSS @import is only
   discovered after the importing sheet is fetched AND parsed, which serialised the font CSS
@@ -1882,6 +1892,7 @@ state read has to happen before first paint.
 
   const setState = () => {
     if (toggle) toggle.setAttribute('aria-pressed', String(on));
+    document.documentElement.classList.toggle('clack-on', on);
   };
 
   // Short filtered noise burst with a fast decay — reads as a clack, not a beep.
@@ -1922,7 +1933,7 @@ state read has to happen before first paint.
     });
   }
 
-  const selector = '.btn, .copy, a.row, .site-nav a, .chip';
+  const selector = '.btn, .copy, .copy-inline, a.row, .site-nav a, .chip';
   document.addEventListener('pointerdown', (e) => {
     if (e.target.closest(selector) && !e.target.closest('[data-clack]')) click(true);
   });
