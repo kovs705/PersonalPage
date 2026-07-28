@@ -305,6 +305,31 @@ printf -- '---\ntitle: "Ok"\ndate: 2026-03-12\n---\nbody\n' > "$TMP/_devlog/a.md
 printf -- '---\ntitle: "P"\ntagline: "t"\nkind: package\nstatus: active\nrepo: kovs705/P\n---\n' > "$TMP/_projects/p.md"
 expect 0 "clean content passes"
 
+# Accept-path regression tests. Reject-path-only coverage is how the quoted-title
+# false positive shipped green the first time.
+printf -- '---\ntitle: "Quoted: colon is fine"\ndate: 2026-03-12\n---\nbody\n' > "$TMP/_devlog/g.md"
+expect 0 "quoted title containing a colon is accepted"
+rm "$TMP/_devlog/g.md"
+
+printf -- "---\ntitle: \"Single quoted project\"\ndate: 2026-03-12\nproject: 'nosuchthing'\n---\n" > "$TMP/_devlog/h.md"
+expect 1 "single-quoted dangling project reference fails"
+rm "$TMP/_devlog/h.md"
+
+printf -- '---\ntitle: "Mixed line"\ndate: 2026-03-12\n---\n<a href="{{ "/ok/" | relative_url }}">ok</a> <a href="/writing/">bad</a>\n' > "$TMP/_devlog/i.md"
+expect 1 "broken absolute path on a line that also has a Liquid link fails"
+rm "$TMP/_devlog/i.md"
+
+# CRLF regression: without tr -d '\r' in frontmatter(), a valid CRLF file
+# false-fails on missing title/date because "---\r" never matches "---".
+printf -- '---\r\ntitle: "CRLF is fine"\r\ndate: 2026-03-12\r\n---\r\nbody\r\n' > "$TMP/_devlog/j.md"
+expect 0 "CRLF line endings still parse as front matter"
+rm "$TMP/_devlog/j.md"
+
+# Duplicate-key regression: Psych uses last-key-wins, so a bad second title must be caught.
+printf -- '---\ntitle: Fine\ntitle: Unquoted: colon\ndate: 2026-03-12\n---\n' > "$TMP/_devlog/k.md"
+expect 1 "malformed duplicate title key is caught even when it is not first"
+rm "$TMP/_devlog/k.md"
+
 printf -- '---\ntitle: "No date"\n---\nbody\n' > "$TMP/_devlog/b.md"
 expect 1 "devlog missing date fails"
 rm "$TMP/_devlog/b.md"
@@ -356,7 +381,7 @@ errors=0
 err() { echo "ERROR: $1"; errors=$((errors+1)); }
 
 # Front matter of a file, i.e. everything between the first two --- lines.
-frontmatter() { awk 'NR==1 && $0!="---"{exit} NR>1{if($0=="---")exit; print}' "$1"; }
+frontmatter() { tr -d '\r' < "$1" | awk 'NR==1 && $0!="---"{exit} NR>1{if($0=="---")exit; print}'; }
 has_key() { frontmatter "$1" | grep -qE "^$2:[[:space:]]*[^[:space:]]"; }
 
 known_projects=""
@@ -372,17 +397,26 @@ check_common() {
   has_key "$f" title || err "$f: missing 'title'"
   has_key "$f" date  || err "$f: missing 'date'"
   # A title containing ':' must be quoted, or the YAML parser breaks the build.
-  local t; t="$(frontmatter "$f" | grep -E '^title:' || true)"
-  if echo "$t" | grep -qE '^title:[[:space:]]*[^"'"'"'].*:'; then
-    err "$f: title contains ':' and is not quoted — this breaks the build"
-  fi
+  # Extract the value, then test it. A regex over the whole line cannot tell a quoted
+  # colon from an unquoted one, and gets this backwards.
+  # Check EVERY title: line, not just the first. Psych applies last-key-wins on duplicate
+  # keys, so inspecting only the first can pass a file whose build-time value is malformed.
+  # Note: an unterminated quote (title: "foo) is treated as quoted and accepted — that case
+  # fails loudly at build time rather than silently, so it is out of scope for this guard.
+  while IFS= read -r v; do
+    case "$v" in
+      \"*|\'*) ;;                                  # quoted — legal, whatever it contains
+      *:*) err "$f: title contains ':' and is not quoted — this breaks the build" ;;
+    esac
+  done < <(frontmatter "$f" | sed -nE 's/^title:[[:space:]]*(.*)$/\1/p')
   # project: must resolve to a real _projects/<slug>.md
-  local p; p="$(frontmatter "$f" | sed -nE 's/^project:[[:space:]]*"?([A-Za-z0-9_-]+)"?.*/\1/p')"
+  local p; p="$(frontmatter "$f" | sed -nE "s/^project:[[:space:]]*['\"]?([A-Za-z0-9_-]+)['\"]?.*/\1/p")"
   if [ -n "$p" ] && ! echo " $known_projects " | grep -q " $p "; then
     err "$f: project '$p' has no _projects/$p.md — the build log will silently be empty"
   fi
   # Absolute internal paths bypass baseurl and 404 in production.
-  if grep -nE '(href|src)="/(?!/)' "$f" 2>/dev/null | grep -v '{{' | grep -q .; then
+  # Strip Liquid expressions first, so a correct link cannot mask a broken one on the same line.
+  if sed 's/{{[^}]*}}//g' "$f" 2>/dev/null | grep -qE '(href|src)="/[a-zA-Z]'; then
     err "$f: absolute internal path — use {{ '/x' | relative_url }}"
   fi
 }
@@ -403,7 +437,7 @@ done
 
 # Absolute paths in templates are the top production risk.
 for f in $(find "$ROOT/_layouts" "$ROOT/_includes" -name '*.html' 2>/dev/null); do
-  if grep -nE '(href|src)="/[a-zA-Z]' "$f" | grep -vq 'relative_url'; then
+  if sed 's/{{[^}]*}}//g' "$f" | grep -qE '(href|src)="/[a-zA-Z]'; then
     err "$f: absolute path in template — wrap in relative_url"
   fi
 done
@@ -425,11 +459,19 @@ echo "validate-content: $errors error(s)"; exit 1
 chmod +x tools/validate-content.sh
 ```
 
-Note: `grep -E` has no lookahead. Replace the absolute-path line in `check_common` with this portable form:
+**Three correctness notes, each of which was a real bug caught in review:**
 
-```bash
-  if grep -nE '(href|src)="/[a-zA-Z]' "$f" 2>/dev/null | grep -v '{{' | grep -q .; then
-```
+1. **No regex lookahead.** POSIX ERE has no `(?!`. The absolute-path scan uses a literal
+   character class, not a negative lookahead.
+2. **Strip Liquid before scanning, never filter by line.** An earlier version piped through
+   `grep -v '{{'`, which drops the whole line — so a line holding both a correct
+   `{{ '/x' | relative_url }}` link and a broken `href="/writing/"` escaped detection entirely.
+   Header and footer partials routinely put several links on one line, so that false negative was
+   live. `sed 's/{{[^}]*}}//g'` removes the templated parts first, then the scan sees only raw HTML.
+3. **Test the title value, not the title line.** A regex like `^title:[[:space:]]*[^"'].*:` cannot
+   distinguish a quoted colon from an unquoted one — `[^"']` matches the space after `title:` and
+   then finds the colon inside the quotes, so it rejects the perfectly legal
+   `title: "Hello: world"`. Extract the value and `case` on it instead.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
