@@ -58,8 +58,10 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.03
   transition:background var(--t-hover) var(--ease)}
 .clack .sw::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;
   border-radius:50%;background:var(--paper);transition:transform var(--t-hover) var(--ease)}
-.clack[aria-pressed="true"] .sw{background:var(--lime)}
-.clack[aria-pressed="true"] .sw::after{transform:translateX(11px);background:var(--ink)}
+/* .clack-on on <html> is a pre-paint stamp from the inline anti-flash guard in head.html —
+   it renders the switch correctly before clack.js has run and set aria-pressed itself. */
+.clack[aria-pressed="true"] .sw, .clack-on .clack .sw{background:var(--lime)}
+.clack[aria-pressed="true"] .sw::after, .clack-on .clack .sw::after{transform:translateX(11px);background:var(--ink)}
 
 /* Section labels */
 .lbl{display:flex;justify-content:space-between;gap:var(--s4);

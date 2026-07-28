@@ -1,6 +1,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {%- comment -%}
+  Anti-flash for the clack toggle, same idea as a dark-mode flash guard: read the stored
+  preference and stamp a class on <html> before first paint, so the switch renders in the
+  right position immediately. clack.js (deferred) is still the sole owner of aria-pressed
+  and audio — this just prevents the visible/AT-state mismatch until it runs. localStorage
+  can throw in some privacy modes, hence the try/catch; failure just means default OFF.
+{%- endcomment -%}
+<script>try{if(localStorage.getItem('clack')==='1')document.documentElement.classList.add('clack-on')}catch(e){}</script>
+{%- comment -%}
   fonts.css is linked directly rather than @imported from site.css. A CSS @import is only
   discovered after the importing sheet is fetched AND parsed, which serialised the font CSS
   and its @font-face files behind site.css — measured at ~150ms of avoidable critical-path
