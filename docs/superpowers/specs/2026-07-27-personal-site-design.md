@@ -215,11 +215,15 @@ These live in `_data/tools.yml` and render as a compact outbound-link block at t
 
 One article already exists: *Abstraction in Swift — a comparative look at Kotlin and Swift*, published on dev.to (EN) and Habr (RU).
 
-It is **not** copied into `_articles/`. Republishing text that already ranks elsewhere creates duplicate content competing with itself, and the dev.to version has existing authority. Instead, `_data/external_writing.yml` holds entries of `{title, date, url, venue, summary}`, and the `/writing/` index concatenates them into the merged list as outbound rows marked with their venue. No local page is generated, so there is nothing to conflict.
+It is **not** copied into `_articles/`. Republishing text that already ranks elsewhere creates duplicate content competing with itself, and the dev.to version has existing authority. Instead, `_data/external_writing.yml` holds entries of `{title, venue, date_display, url, summary}`, and no local page is generated, so there is nothing to conflict.
+
+**Rendered as a separate "Published elsewhere" block, not merged into the sorted list.** Merging was the original intent, but Liquid's `sort` filter would then compare a YAML `Date` from the data file against a Jekyll `Time` from a document, which raises at build time. `date_display` is therefore a plain string, and the external entries get their own labelled block at the bottom of `/writing/`. This is also better for the reader: it signals up front that the piece lives on dev.to rather than here.
 
 ```liquid
+{%- comment -%} documents merge safely — both sides carry Time dates {%- endcomment -%}
 {% assign all = site.articles | concat: site.devlog | sort: "date" | reverse %}
-{%- comment -%} external rows merge in the same list, rendered as outbound {%- endcomment -%}
+{%- comment -%} external entries render separately — their dates are strings {%- endcomment -%}
+{% for x in site.data.external_writing %}...{% endfor %}
 ```
 
 This also means the writing index is not empty on day one, which matters given §1's accepted risk.
