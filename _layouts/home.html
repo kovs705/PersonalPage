@@ -1,0 +1,38 @@
+---
+layout: base
+---
+<main class="wrap grain" id="main">
+  <section class="hero">
+    <h1>I ship iOS apps and <span class="knock">write down</span> the parts that fought back.</h1>
+    <p class="dek">{{ site.description }} Based in Buenos Aires, working remote.</p>
+    <div class="hero-cta">
+      <a class="btn" href="{{ '/devlog/' | relative_url }}">Read the devlog →</a>
+      <a class="btn ghost" href="https://github.com/{{ site.social.github }}" rel="noreferrer">GitHub</a>
+    </div>
+  </section>
+
+  {% assign packages = site.projects | where: "kind", "package" | sort: "order" %}
+  {% assign apps = site.projects | where: "kind", "app" | sort: "order" %}
+  {% assign articles = site.articles | sort: "date" | reverse %}
+  {% assign entries = site.devlog | sort: "date" | reverse %}
+
+  <div class="lbl reveal"><span>01 / PACKAGES</span><span>SWIFTPM · TAP TO COPY</span></div>
+  {% for p in packages %}{% include package-row.html p=p %}{% endfor %}
+
+  <div class="lbl reveal"><span>02 / IN PROGRESS</span><span>APPS</span></div>
+  {% for p in apps %}{% include package-row.html p=p %}{% endfor %}
+
+  <div class="lbl reveal"><span>03 / WRITING</span>
+    <span><a href="{{ '/writing/' | relative_url }}">ALL →</a></span></div>
+  {% assign shown = 0 %}
+  {% for e in articles %}{% if shown < 3 %}{% include entry-row.html e=e %}{% assign shown = shown | plus: 1 %}{% endif %}{% endfor %}
+  {% assign shown = 0 %}
+  {% for e in entries %}{% if shown < 3 %}{% include entry-row.html e=e %}{% assign shown = shown | plus: 1 %}{% endif %}{% endfor %}
+
+  <div class="lbl reveal"><span>04 / WHO</span><span><a href="{{ '/about/' | relative_url }}">MORE →</a></span></div>
+  <p class="bio">
+    Apple platform developer. SwiftUI, UIKit, some Kotlin Multiplatform. Healthcare and
+    logistics in production. A happy dad, average Nintendo enjoyer, and fan of
+    microcontrollers and single-board computers.
+  </p>
+</main>
