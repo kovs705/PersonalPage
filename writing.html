@@ -1,0 +1,27 @@
+---
+layout: page
+title: Writing
+section: writing
+permalink: /writing/
+dek: "Articles when something deserves the full argument. Devlog when it doesn't."
+---
+
+{% assign all = site.articles | concat: site.devlog | sort: "date" | reverse %}
+
+<div class="chips" role="group" aria-label="Filter writing by kind">
+  <button class="chip" type="button" data-filter="all" aria-pressed="true">all</button>
+  <button class="chip" type="button" data-filter="article" aria-pressed="false">articles</button>
+  <button class="chip" type="button" data-filter="devlog" aria-pressed="false">devlog</button>
+</div>
+
+<div id="writing-list">
+{% for e in all %}{% include entry-row.html e=e %}{% endfor %}
+</div>
+
+<div class="lbl"><h2>PUBLISHED ELSEWHERE</h2><span>EXTERNAL</span></div>
+{% for x in site.data.external_writing %}
+<a class="row" href="{{ x.url }}" rel="noreferrer">
+  <span class="row-title">{{ x.title }} <em>— {{ x.summary }}</em></span>
+  <span class="row-meta">{{ x.venue }} · {{ x.date_display }} ↗</span>
+</a>
+{% endfor %}
