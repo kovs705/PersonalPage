@@ -642,6 +642,10 @@ Expected: FAIL — missing file.
   --paper:#F3F0E7; --dim:#8E9184; --lime:#C9F227; --meta:#7E8175; --line-2:#33362B;
   /* article — bone paper */
   --bone:#F2EFE6; --bone-2:#DBD6C7; --article-ink:#15140F; --tomato:#E8422C;
+  /* --tomato measures 3.48:1 on bone: fine for borders, rules and focus rings (3:1 threshold)
+     but it FAILS the 4.5:1 text threshold. Small text on bone uses --tomato-ink (4.76:1),
+     same hue, darker value. Do not use --tomato for text under 18px. */
+  --tomato-ink:#C13725;
 
   --ease:cubic-bezier(.2,.8,.3,1);
   --t-press:80ms; --t-hover:180ms;
@@ -1494,7 +1498,7 @@ the layout above assigns `previdx` and `nextidx` before the loop.
 .prose.is-entry .prose-head h1{font-size:clamp(24px,4vw,32px)}
 .lede{font-size:20px;line-height:1.55;color:#4A463C;margin:var(--s4) 0 0}
 .in-project{font:400 13px/1.5 var(--mono);color:#6E6A5C;margin:var(--s4) 0 0}
-.in-project a{color:var(--tomato);text-decoration:underline;text-underline-offset:2px}
+.in-project a{color:var(--tomato-ink);text-decoration:underline;text-underline-offset:2px}
 
 .prose h2,.prose h3{font-family:var(--display);margin:var(--s7) 0 var(--s3);
   color:var(--article-ink);line-height:1.15}
@@ -1531,12 +1535,12 @@ figcaption{font:400 13px/1.5 var(--mono);color:#6E6A5C;margin-top:var(--s2)}
 
 .prose-tags{font:400 13px/1.6 var(--mono);color:#6E6A5C;margin:var(--s7) 0 0}
 .prose-tags a{color:#6E6A5C;text-decoration:none}
-.prose-tags a:hover{color:var(--tomato)}
+.prose-tags a:hover{color:var(--tomato-ink)}
 .prose-nav{display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;
   border-top:1px solid var(--bone-2);margin-top:var(--s6);padding-top:var(--s4);
   font:400 14px/1.5 var(--mono)}
 .prose-nav a{color:var(--article-ink)}
-.prose-nav a:hover{color:var(--tomato)}
+.prose-nav a:hover{color:var(--tomato-ink)}
 
 /* Focus ring must be visible on bone too — lime would fail contrast here. */
 .bone-surface :focus-visible{outline:2px solid var(--tomato);outline-offset:2px}

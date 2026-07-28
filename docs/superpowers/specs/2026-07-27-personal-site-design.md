@@ -313,7 +313,9 @@ This satisfies the no-Inter constraint by construction.
   --paper:#F3F0E7; --dim:#8E9184; --lime:#C9F227;
 
   /* article — bone paper, quiet, serif */
-  --bone:#F2EFE6; --bone-2:#DBD6C7; --article-ink:#15140F; --tomato:#E8422C;
+  --bone:#F2EFE6; --bone-2:#DBD6C7; --article-ink:#15140F;
+  --tomato:#E8422C;      /* graphical only — 3.48:1, fails the 4.5:1 text threshold */
+  --tomato-ink:#C13725;  /* text on bone — 4.76:1 */
 
   --ease:cubic-bezier(.2,.8,.3,1);
   --t-press:80ms; --t-hover:180ms; --t-page:320ms;
@@ -325,7 +327,8 @@ Spacing on a 4px base. One easing curve. Three durations.
 
 ### 6.2 Accessibility constraints derived from the palette
 
-- **Tomato `#E8422C` on bone `#F2EFE6` is ~3.9:1** — fails WCAG AA for body text. Tomato is restricted to large text (≥24px), rules, and UI accents. Article body copy is always `--article-ink`.
+- **Tomato `#E8422C` on bone `#F2EFE6` measures 3.48:1** (an earlier draft of this spec said ~3.9:1; that was wrong, corrected after computing it during Task 9). It clears the **3:1** threshold for borders, rules, underline decoration and focus rings, but **fails the 4.5:1 threshold for text**. So tomato is a graphical colour only.
+- **`--tomato-ink` `#C13725` (4.76:1) is the token for text on bone** — same hue, darker value. Any tomato-coloured text under 18px uses it. Article body copy is always `--article-ink` regardless.
 - **Lime `#C9F227` on graphite `#121310` is ~15:1** — safe anywhere on the shell. Lime is **dark-surface only** and never appears on bone.
 - **Focus states:** 2px lime outline with 2px offset on every interactive element, on all surfaces. A dense keyboard-navigable list with invisible focus is unusable.
 
