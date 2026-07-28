@@ -18,6 +18,12 @@ iOS, mostly. SwiftUI and UIKit in production, some Kotlin Multiplatform where sh
 actually pays for itself. My professional work has been in **healthcare** and **logistics** —
 domains where the interface being wrong is not a cosmetic problem.
 
+Right now that means
+[Lifetime Health](https://apps.apple.com/jp/app/lifetime-health/id6496204102?l=en-US), an app for
+ordering home healthcare services in India — on the App Store, so you can go and look at it. Before
+that I led iOS across a portfolio of MedTech projects. The [CV]({{ '/cv/' | relative_url }}) has the
+dates.
+
 Alongside that I publish [Swift packages]({{ '/projects/' | relative_url }}): sun-position
 maths, tactile UI sound, preview tooling, transitions, editors. Small, single-purpose, and
 installable in about thirty seconds.
