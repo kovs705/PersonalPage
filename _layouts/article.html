@@ -4,10 +4,12 @@ layout: base
 <main class="bone-surface grain-paper" id="main">
   <article class="prose {% if page.collection == 'devlog' %}is-entry{% endif %}">
     <header class="prose-head">
+      {% if page.collection %}
       <p class="kicker">
         {% if page.collection == 'devlog' %}Devlog{% else %}Article{% endif %}
         · <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %B %Y" }}</time>
       </p>
+      {% endif %}
       <h1>{{ page.title }}</h1>
       {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
 
