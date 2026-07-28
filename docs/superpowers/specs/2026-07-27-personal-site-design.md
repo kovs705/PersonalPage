@@ -81,16 +81,16 @@ GitHub Pages' Jekyll resolves all three because GitHub is the builder. The cost 
 _config.yml
 _layouts/     base.html home.html article.html project.html page.html cv.html
 _includes/    head.html header.html footer.html figure.html note.html
-              video.html package-row.html clack-toggle.html entry-row.html
+              video.html package-row.html copy-button.html entry-row.html
 _articles/    <slug>.md                  → /writing/:name/
-_devlog/      YYYY-MM-DD-<slug>.md       → /devlog/:name/
+_devlog/      YYYY-MM-DD-<slug>.md       → /devlog/:slug/
 _projects/    <slug>.md                  → /projects/:name/
 _data/        tools.yml external_writing.yml
 assets/css/   site.css article.css rouge.css print.css
 assets/js/    clack.js copy.js tilt.js filter.js
 assets/fonts/ *.woff2
 assets/img/<collection>/<slug>/
-index.md about.md cv.md writing.md devlog.md projects.md tags.md 404.html
+index.html about.md cv.md writing.html devlog.html projects.html tags.html 404.html
 feed.xml      (hand-written Atom, layout: null)
 tools/        optimize-image.sh validate-content.sh new-devlog.sh new-article.sh
 Gemfile       (optional local preview only)
@@ -104,7 +104,7 @@ url: "https://kovs705.github.io"
 baseurl: "/PersonalPage"
 collections:
   articles: { output: true, permalink: /writing/:name/ }
-  devlog:   { output: true, permalink: /devlog/:name/ }
+  devlog:   { output: true, permalink: /devlog/:slug/ }   # :slug strips the date prefix; :name does not
   projects: { output: true, permalink: /projects/:name/ }
 plugins: [jekyll-seo-tag, jekyll-sitemap]
 ```
@@ -129,7 +129,7 @@ tags: [swiftui, gestures]
 # _articles/native-drag-and-drop.md
 title: "Making drag & drop feel native in SwiftUI"
 date: 2026-03-10                                # REQUIRED
-summary: "One sentence."                        # REQUIRED — listings, meta description, OG card
+description: "One sentence."                    # REQUIRED — jekyll-seo-tag reads THIS key
 image: hero.png                                 # optional; assets/img/articles/<slug>/
 project: baglog                                 # optional
 tags: [swiftui]
@@ -151,10 +151,12 @@ order: 2                  # ordering within its kind
 | Collection | Required |
 |---|---|
 | `_devlog` | `title`, `date` |
-| `_articles` | `title`, `date`, `summary` |
+| `_articles` | `title`, `date`, `description` |
 | `_projects` | `title`, `tagline`, `kind`, `status` (`repo` required unless `status: coming-soon`) |
 
-Devlog entries need no `summary` — listings and the feed use Jekyll's auto-excerpt (first paragraph). Articles require one because it also becomes the meta description and the unfurl card text, where an auto-excerpt reads badly.
+Devlog entries need no `description` — listings and the feed use Jekyll's auto-excerpt (first paragraph). Articles require one because it also becomes the meta description and the unfurl card text, where an auto-excerpt reads badly.
+
+**The key must be `description`, not `summary`.** An earlier draft of this spec called it `summary`; `jekyll-seo-tag` only reads a front-matter key literally named `description` and silently falls back to the first paragraph otherwise. Since the unfurl card is the acceptance test for choosing Jekyll at all (§11.4), a key it cannot see would have quietly defeated the point. `article.html` renders the same key as the on-page lede, so there is one source of truth rather than two fields that can drift.
 
 ### 3.5 Data flow
 
@@ -215,7 +217,7 @@ These live in `_data/tools.yml` and render as a compact outbound-link block at t
 
 One article already exists: *Abstraction in Swift — a comparative look at Kotlin and Swift*, published on dev.to (EN) and Habr (RU).
 
-It is **not** copied into `_articles/`. Republishing text that already ranks elsewhere creates duplicate content competing with itself, and the dev.to version has existing authority. Instead, `_data/external_writing.yml` holds entries of `{title, venue, date_display, url, summary}`, and no local page is generated, so there is nothing to conflict.
+It is **not** copied into `_articles/`. Republishing text that already ranks elsewhere creates duplicate content competing with itself, and the dev.to version has existing authority. Instead, `_data/external_writing.yml` holds entries of `{title, venue, date_display, url, summary}` (this `summary` is a data field for the listing row, unrelated to the front-matter `description` key), and no local page is generated, so there is nothing to conflict.
 
 **Rendered as a separate "Published elsewhere" block, not merged into the sorted list.** Merging was the original intent, but Liquid's `sort` filter would then compare a YAML `Date` from the data file against a Jekyll `Time` from a document, which raises at build time. `date_display` is therefore a plain string, and the external entries get their own labelled block at the bottom of `/writing/`. This is also better for the reader: it signals up front that the piece lives on dev.to rather than here.
 

@@ -9,7 +9,7 @@ layout: base
         · <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %B %Y" }}</time>
       </p>
       <h1>{{ page.title }}</h1>
-      {% if page.summary %}<p class="lede">{{ page.summary }}</p>{% endif %}
+      {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
 
       {% if page.project %}
         {% assign proj = site.projects | where: "slug", page.project | first %}

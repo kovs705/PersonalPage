@@ -49,8 +49,8 @@ printf -- '---\ntitle: "No date"\n---\nbody\n' > "$TMP/_devlog/b.md"
 expect 1 "devlog missing date fails"
 rm "$TMP/_devlog/b.md"
 
-printf -- '---\ntitle: "No summary"\ndate: 2026-03-10\n---\nbody\n' > "$TMP/_articles/c.md"
-expect 1 "article missing summary fails"
+printf -- '---\ntitle: "No description"\ndate: 2026-03-10\n---\nbody\n' > "$TMP/_articles/c.md"
+expect 1 "article missing description fails"
 rm "$TMP/_articles/c.md"
 
 printf -- '---\ntitle: "Dangling"\ndate: 2026-03-12\nproject: nosuchthing\n---\n' > "$TMP/_devlog/d.md"

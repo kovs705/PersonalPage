@@ -1,7 +1,6 @@
 ---
 title: "Why I rebuilt my site around a devlog"
 date: 2026-07-28
-summary: "My old resume page made claims. This one shows version numbers, dates, and the parts that fought back."
 description: "My old resume page made claims. This one shows version numbers, dates, and the parts that fought back."
 tags: [meta, writing]
 ---

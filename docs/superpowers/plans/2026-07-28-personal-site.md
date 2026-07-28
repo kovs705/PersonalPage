@@ -163,7 +163,7 @@ collections:
     permalink: /writing/:name/
   devlog:
     output: true
-    permalink: /devlog/:name/
+    permalink: /devlog/:slug/   # :slug strips the date prefix; :name does NOT
   projects:
     output: true
     permalink: /projects/:name/
@@ -353,8 +353,8 @@ printf -- '---\ntitle: "No date"\n---\nbody\n' > "$TMP/_devlog/b.md"
 expect 1 "devlog missing date fails"
 rm "$TMP/_devlog/b.md"
 
-printf -- '---\ntitle: "No summary"\ndate: 2026-03-10\n---\nbody\n' > "$TMP/_articles/c.md"
-expect 1 "article missing summary fails"
+printf -- '---\ntitle: "No description"\ndate: 2026-03-10\n---\nbody\n' > "$TMP/_articles/c.md"
+expect 1 "article missing description fails"
 rm "$TMP/_articles/c.md"
 
 printf -- '---\ntitle: "Dangling"\ndate: 2026-03-12\nproject: nosuchthing\n---\n' > "$TMP/_devlog/d.md"
@@ -444,7 +444,7 @@ for f in "$ROOT"/_devlog/*.md; do [ -e "$f" ] || continue; check_common "$f"; do
 for f in "$ROOT"/_articles/*.md; do
   [ -e "$f" ] || continue
   check_common "$f"
-  has_key "$f" summary || err "$f: missing 'summary' (used for meta description and unfurl card)"
+  has_key "$f" description || err "$f: missing 'description' (jekyll-seo-tag reads THIS key for the meta description and unfurl card; a 'summary' key is invisible to it)"
 done
 for f in "$ROOT"/_projects/*.md; do
   [ -e "$f" ] || continue
@@ -1426,7 +1426,7 @@ layout: base
         · <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %B %Y" }}</time>
       </p>
       <h1>{{ page.title }}</h1>
-      {% if page.summary %}<p class="lede">{{ page.summary }}</p>{% endif %}
+      {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
 
       {% if page.project %}
         {% assign proj = site.projects | where: "slug", page.project | first %}
@@ -1666,7 +1666,7 @@ a Liquid `sort` alongside document `Time` objects, which raises at build time.
 ---
 title: "Why I rebuilt my site around a devlog"
 date: 2026-07-28
-summary: "My old resume page made claims. This one shows version numbers, dates, and the parts that fought back."
+description: "My old resume page made claims. This one shows version numbers, dates, and the parts that fought back."
 tags: [meta, writing]
 ---
 
@@ -2363,7 +2363,7 @@ permalink: /feed.xml
     <updated>{{ e.date | date_to_xmlschema }}</updated>
     <category term="{% if e.collection == 'articles' %}article{% else %}devlog{% endif %}"/>
     {% for t in e.tags %}<category term="{{ t | xml_escape }}"/>{% endfor %}
-    <summary type="text">{% if e.summary %}{{ e.summary | xml_escape }}{% else %}{{ e.excerpt | strip_html | normalize_whitespace | truncate: 300 | xml_escape }}{% endif %}</summary>
+    <summary type="text">{% if e.description %}{{ e.description | xml_escape }}{% else %}{{ e.excerpt | strip_html | normalize_whitespace | truncate: 300 | xml_escape }}{% endif %}</summary>
     <content type="html">{{ e.content | strip_newlines | xml_escape }}</content>
   </entry>
   {% endfor %}
@@ -2455,7 +2455,7 @@ file="_articles/${slug}.md"
   echo "---"
   echo "title: \"${title//\"/\\\"}\""
   echo "date: $(date +%Y-%m-%d)"
-  echo "summary: \"One sentence — becomes the meta description and the link-preview text.\""
+  echo "description: \"One sentence — jekyll-seo-tag reads this for the meta description and link preview.\""
   [ -n "$project" ] && echo "project: ${project}"
   echo "tags: []"
   echo "---"

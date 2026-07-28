@@ -50,7 +50,7 @@ for f in "$ROOT"/_devlog/*.md; do [ -e "$f" ] || continue; check_common "$f"; do
 for f in "$ROOT"/_articles/*.md; do
   [ -e "$f" ] || continue
   check_common "$f"
-  has_key "$f" summary || err "$f: missing 'summary' (used for meta description and unfurl card)"
+  has_key "$f" description || err "$f: missing 'description' (jekyll-seo-tag reads THIS key for the meta description and unfurl card; a 'summary' key is invisible to it)"
 done
 for f in "$ROOT"/_projects/*.md; do
   [ -e "$f" ] || continue
