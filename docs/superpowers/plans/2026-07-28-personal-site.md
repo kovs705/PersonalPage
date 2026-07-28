@@ -696,6 +696,10 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.03
 .lbl{display:flex;justify-content:space-between;gap:var(--s4);
   font:500 10px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;
   color:var(--meta);border-top:1px solid var(--line);padding-top:var(--s3);margin:var(--s7) 0 0}
+/* The first span of a .lbl is an <h2> for screen-reader navigation (see Task 8 fix), but must
+   stay pixel-identical to a plain span — override the global h1,h2,h3 display-font rule. */
+.lbl h2{font:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;
+  color:inherit;margin:0}
 
 /* Rows — the primary unit of the whole site */
 .row{display:grid;grid-template-columns:1fr auto;gap:var(--s4);align-items:baseline;
@@ -725,6 +729,13 @@ a.row:hover .row-title{color:var(--lime)}
 .copy:active{transform:translateY(1px)}
 .copy b{color:var(--lime);font-weight:500}
 .copy>span{min-width:0;overflow-wrap:anywhere}
+
+/* Inline copy control for list rows — keeps a row to one line (unlike .copy, which is a
+   full-width block used only on project detail pages). Always visible: a hover-only
+   control is unreachable for touch and confusing for keyboard users. */
+.copy-inline{font:inherit;font-size:inherit;color:var(--lime);background:none;border:0;
+  padding:0;margin:0;cursor:pointer;transition:transform var(--t-press) var(--ease)}
+.copy-inline:active{transform:translateY(1px)}
 
 /* Focus must always be obvious in a dense keyboard-navigable list. */
 :focus-visible{outline:2px solid var(--lime);outline-offset:2px}
@@ -762,6 +773,10 @@ a.row:hover .row-title{color:var(--lime)}
   overflow-x:auto;font-size:13px}
 .prose-dark pre code{background:none;padding:0}
 .prose-dark ul,.prose-dark ol{padding-left:1.3em;margin:0 0 var(--s4)}
+
+/* Homepage bio paragraph — same treatment as prose-dark's dim/width/spacing, own class
+   because it's a single line of text, not a prose block. */
+.bio{color:var(--dim);max-width:34em;padding:var(--s4) 0}
 
 /* Reveals. DEFAULT IS VISIBLE — see plan note. Only enhances. */
 @supports (animation-timeline:view()){
@@ -1176,11 +1191,11 @@ screen-reader user tabbing `/projects/` hears eight long near-identical URLs rea
       information a developer actually wants before installing.
     {%- endcomment -%}
     {% if p.status == 'coming-soon' %}coming soon{% else %}{{ p.license | default: 'no licence' }}{% endif %}
+    {% if p.repo %} · <button class="copy-inline" type="button"
+        aria-label="Copy clone URL for {{ p.title }}"
+        data-copy="https://github.com/{{ p.repo }}.git"><span data-copy-label>copy</span></button>{% endif %}
   </span>
 </div>
-{% if p.repo %}
-{% include copy-button.html repo=p.repo name=p.title %}
-{% endif %}
 ```
 
 `_includes/entry-row.html` — expects `include.e`, used by home, `/writing/`, `/devlog/`, and project pages:
@@ -1228,7 +1243,7 @@ layout: base
 
   {% assign log = site.devlog | where: "project", page.slug | sort: "date" | reverse %}
   {% if log.size > 0 %}
-    <div class="lbl"><span>BUILD LOG</span><span>{{ log.size }} ENTR{% if log.size == 1 %}Y{% else %}IES{% endif %}</span></div>
+    <div class="lbl"><h2>BUILD LOG</h2><span>{{ log.size }} ENTR{% if log.size == 1 %}Y{% else %}IES{% endif %}</span></div>
     {% for e in log %}{% include entry-row.html e=e %}{% endfor %}
   {% endif %}
 </main>
@@ -1248,14 +1263,14 @@ dek: "Seven packages you can install now, three apps in progress, and a handful 
 {% assign packages = site.projects | where: "kind", "package" | sort: "order" %}
 {% assign apps = site.projects | where: "kind", "app" | sort: "order" %}
 
-<div class="lbl"><span>01 / PACKAGES</span><span>SWIFTPM</span></div>
+<div class="lbl"><h2>01 / PACKAGES</h2><span>SWIFTPM</span></div>
 {% for p in packages %}{% include package-row.html p=p %}{% endfor %}
 
-<div class="lbl"><span>02 / IN PROGRESS</span><span>APPS</span></div>
+<div class="lbl"><h2>02 / IN PROGRESS</h2><span>APPS</span></div>
 {% for p in apps %}{% include package-row.html p=p %}{% endfor %}
 
 {% if site.data.tools and site.data.tools.size > 0 %}
-<div class="lbl"><span>03 / GISTS &amp; TOOLS</span><span>EXTERNAL</span></div>
+<div class="lbl"><h2>03 / GISTS &amp; TOOLS</h2><span>EXTERNAL</span></div>
 {% for t in site.data.tools %}
 <a class="row" href="{{ t.url }}" rel="noreferrer">
   <span class="row-title">{{ t.name }} <em>— {{ t.note }}</em></span>
@@ -1322,22 +1337,21 @@ layout: base
   {% assign articles = site.articles | sort: "date" | reverse %}
   {% assign entries = site.devlog | sort: "date" | reverse %}
 
-  <div class="lbl reveal"><span>01 / PACKAGES</span><span>SWIFTPM · TAP TO COPY</span></div>
+  <div class="lbl reveal"><h2>01 / PACKAGES</h2><span>SWIFTPM · TAP TO COPY</span></div>
   {% for p in packages %}{% include package-row.html p=p %}{% endfor %}
 
-  <div class="lbl reveal"><span>02 / IN PROGRESS</span><span>APPS</span></div>
+  <div class="lbl reveal"><h2>02 / IN PROGRESS</h2><span>APPS</span></div>
   {% for p in apps %}{% include package-row.html p=p %}{% endfor %}
 
-  <div class="lbl reveal"><span>03 / WRITING</span>
+  {% if articles.size > 0 or entries.size > 0 %}
+  <div class="lbl reveal"><h2>03 / WRITING</h2>
     <span><a href="{{ '/writing/' | relative_url }}">ALL →</a></span></div>
-  {% assign recent = articles | concat: entries %}
-  {% assign shown = 0 %}
-  {% for e in articles %}{% if shown < 3 %}{% include entry-row.html e=e %}{% assign shown = shown | plus: 1 %}{% endif %}{% endfor %}
-  {% assign shown = 0 %}
-  {% for e in entries %}{% if shown < 3 %}{% include entry-row.html e=e %}{% assign shown = shown | plus: 1 %}{% endif %}{% endfor %}
+  {% for e in articles limit: 3 %}{% include entry-row.html e=e %}{% endfor %}
+  {% for e in entries limit: 3 %}{% include entry-row.html e=e %}{% endfor %}
+  {% endif %}
 
-  <div class="lbl reveal"><span>04 / WHO</span><span><a href="{{ '/about/' | relative_url }}">MORE →</a></span></div>
-  <p style="color:var(--dim);max-width:34em;padding:var(--s4) 0">
+  <div class="lbl reveal"><h2>04 / WHO</h2><span><a href="{{ '/about/' | relative_url }}">MORE →</a></span></div>
+  <p class="bio">
     Apple platform developer. SwiftUI, UIKit, some Kotlin Multiplatform. Healthcare and
     logistics in production. A happy dad, average Nintendo enjoyer, and fan of
     microcontrollers and single-board computers.

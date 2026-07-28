@@ -1,6 +1,6 @@
 # Build progress — personal site
 
-**Paused:** 2026-07-28
+**Updated:** 2026-07-28
 **Branch:** `build-site` (never implement on `main`)
 **Spec:** [specs/2026-07-27-personal-site-design.md](specs/2026-07-27-personal-site-design.md)
 **Plan:** [plans/2026-07-28-personal-site.md](plans/2026-07-28-personal-site.md) — 18 tasks
@@ -15,13 +15,23 @@ reviewer, then a code-quality reviewer, fixing and re-reviewing until both pass.
 
 | Task | State |
 |---|---|
-| 1. Build harness & config | ✅ Done, both reviews passed |
-| 2. Content validation guard | ✅ Done, both reviews passed |
-| 3. Self-hosted fonts | ✅ Done, both reviews passed |
-| 4–18 | ⬜ Not started |
+| 1. Build harness & config | ✅ Done, reviewed |
+| 2. Content validation guard | ✅ Done, reviewed — 11/11 own tests pass |
+| 3. Self-hosted fonts | ✅ Done, reviewed |
+| 4. Design tokens & tactility CSS | ✅ Done, reviewed |
+| 5. Base layout, head, header, footer | ✅ Done, reviewed — Lighthouse 98 perf / 100 a11y |
+| 6. Projects collection content | ✅ Done, reviewed |
+| 7. Project layout & projects index | ✅ Done, reviewed |
+| 8. Homepage | ✅ Done, reviewed — Lighthouse 99 perf / 100 a11y |
+| 9–18 | ⬜ Not started |
 
-Commits on `build-site`: `b135aee`, `7ade7c3`, `bd9e3ae`, `2380b1f`, `2fa8c1a`, `7f93aea`,
-`b97c7c5`, `aa22017`.
+Live check: `tools/build.sh` then serve `_site/` under a `/PersonalPage/` prefix (paths are
+baseurl-absolute, so a root-served copy renders unstyled). `tools/serve.sh` does this for you at
+http://localhost:4000/PersonalPage/.
+
+**Beware stale CSS when verifying in a browser.** Two separate agents were misled by a cached
+`site.css` and briefly believed new rules had not applied. Bypass with a cache-busting query or check
+`getComputedStyle` rather than trusting a screenshot.
 
 ## What exists and works
 
