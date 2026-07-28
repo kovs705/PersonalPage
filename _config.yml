@@ -1,0 +1,59 @@
+title: "Eugene Rozhkov"
+tagline: "iOS developer — Apple platforms, SwiftUI, Kotlin Multiplatform"
+description: "iOS developer shipping in healthcare and logistics. Swift packages, articles, and a development log."
+author: "Eugene Rozhkov"
+email: "EuKovs@gmail.com"
+
+url: "https://kovs705.github.io"
+baseurl: "/PersonalPage"
+repository: kovs705/PersonalPage   # REQUIRED — build fails without it
+lang: en
+
+social:
+  github: kovs705
+  telegram: kovs705
+  linkedin: kovs705
+
+goatcounter: ""   # set to your GoatCounter code in Task 17; empty disables the script
+
+collections:
+  articles:
+    output: true
+    permalink: /writing/:name/
+  devlog:
+    output: true
+    permalink: /devlog/:name/
+  projects:
+    output: true
+    permalink: /projects/:name/
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+sass:
+  style: compressed
+
+defaults:
+  - scope: { path: "", type: "articles" }
+    values: { layout: "article", surface: "bone", section: "writing" }
+  - scope: { path: "", type: "devlog" }
+    values: { layout: "article", surface: "bone", section: "writing" }
+  - scope: { path: "", type: "projects" }
+    values: { layout: "project", section: "projects" }
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - tools
+  - docs
+  - README.md
+  - .superpowers
