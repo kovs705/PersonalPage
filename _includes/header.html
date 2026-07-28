@@ -1,0 +1,14 @@
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="{{ '/' | relative_url }}"><b>kovs705</b> — {{ site.author }}</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="{{ '/writing/' | relative_url }}" {% if page.section == 'writing' %}aria-current="page"{% endif %}>writing</a>
+      <a href="{{ '/projects/' | relative_url }}" {% if page.section == 'projects' %}aria-current="page"{% endif %}>projects</a>
+      <a href="{{ '/about/' | relative_url }}" {% if page.section == 'about' %}aria-current="page"{% endif %}>about</a>
+      <button class="clack" type="button" aria-pressed="false" data-clack
+              title="Sound by Clackable — my Swift package">
+        clack <span class="sw" aria-hidden="true"></span>
+      </button>
+    </nav>
+  </div>
+</header>
