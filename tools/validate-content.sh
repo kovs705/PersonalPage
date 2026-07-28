@@ -8,7 +8,7 @@ errors=0
 err() { echo "ERROR: $1"; errors=$((errors+1)); }
 
 # Front matter of a file, i.e. everything between the first two --- lines.
-frontmatter() { awk 'NR==1 && $0!="---"{exit} NR>1{if($0=="---")exit; print}' "$1"; }
+frontmatter() { tr -d '\r' < "$1" | awk 'NR==1 && $0!="---"{exit} NR>1{if($0=="---")exit; print}'; }
 has_key() { frontmatter "$1" | grep -qE "^$2:[[:space:]]*[^[:space:]]"; }
 
 known_projects=""
@@ -24,17 +24,19 @@ check_common() {
   has_key "$f" title || err "$f: missing 'title'"
   has_key "$f" date  || err "$f: missing 'date'"
   # A title containing ':' must be quoted, or the YAML parser breaks the build.
-  local t; t="$(frontmatter "$f" | grep -E '^title:' || true)"
-  if echo "$t" | grep -qE '^title:[[:space:]]*[^"'"'"'].*:'; then
-    err "$f: title contains ':' and is not quoted — this breaks the build"
-  fi
+  local v; v="$(frontmatter "$f" | sed -nE 's/^title:[[:space:]]*(.*)$/\1/p' | head -1)"
+  case "$v" in
+    \"*|\'*) ;;                                    # quoted — legal, whatever it contains
+    *:*) err "$f: title contains ':' and is not quoted — this breaks the build" ;;
+  esac
   # project: must resolve to a real _projects/<slug>.md
-  local p; p="$(frontmatter "$f" | sed -nE 's/^project:[[:space:]]*"?([A-Za-z0-9_-]+)"?.*/\1/p')"
+  local p; p="$(frontmatter "$f" | sed -nE "s/^project:[[:space:]]*['\"]?([A-Za-z0-9_-]+)['\"]?.*/\1/p")"
   if [ -n "$p" ] && ! echo " $known_projects " | grep -q " $p "; then
     err "$f: project '$p' has no _projects/$p.md — the build log will silently be empty"
   fi
   # Absolute internal paths bypass baseurl and 404 in production.
-  if grep -nE '(href|src)="/[a-zA-Z]' "$f" 2>/dev/null | grep -v '{{' | grep -q .; then
+  # Strip Liquid expressions first so a correct link on the same line cannot mask a broken one.
+  if sed 's/{{[^}]*}}//g' "$f" 2>/dev/null | grep -qE '(href|src)="/[a-zA-Z]'; then
     err "$f: absolute internal path — use {{ '/x' | relative_url }}"
   fi
 }
@@ -55,7 +57,7 @@ done
 
 # Absolute paths in templates are the top production risk.
 for f in $(find "$ROOT/_layouts" "$ROOT/_includes" -name '*.html' 2>/dev/null); do
-  if grep -nE '(href|src)="/[a-zA-Z]' "$f" | grep -vq 'relative_url'; then
+  if sed 's/{{[^}]*}}//g' "$f" | grep -qE '(href|src)="/[a-zA-Z]'; then
     err "$f: absolute path in template — wrap in relative_url"
   fi
 done

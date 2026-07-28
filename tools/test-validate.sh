@@ -22,6 +22,18 @@ printf -- '---\ntitle: "Ok"\ndate: 2026-03-12\n---\nbody\n' > "$TMP/_devlog/a.md
 printf -- '---\ntitle: "P"\ntagline: "t"\nkind: package\nstatus: active\nrepo: kovs705/P\n---\n' > "$TMP/_projects/p.md"
 expect 0 "clean content passes"
 
+printf -- '---\ntitle: "Quoted: colon is fine"\ndate: 2026-03-12\n---\nbody\n' > "$TMP/_devlog/g.md"
+expect 0 "quoted title containing a colon is accepted"
+rm "$TMP/_devlog/g.md"
+
+printf -- "---\ntitle: \"Single quoted project\"\ndate: 2026-03-12\nproject: 'nosuchthing'\n---\n" > "$TMP/_devlog/h.md"
+expect 1 "single-quoted dangling project reference fails"
+rm "$TMP/_devlog/h.md"
+
+printf -- '---\ntitle: "Mixed line"\ndate: 2026-03-12\n---\n<a href="{{ "/ok/" | relative_url }}">ok</a> <a href="/writing/">bad</a>\n' > "$TMP/_devlog/i.md"
+expect 1 "broken absolute path on a line that also has a Liquid link fails"
+rm "$TMP/_devlog/i.md"
+
 printf -- '---\ntitle: "No date"\n---\nbody\n' > "$TMP/_devlog/b.md"
 expect 1 "devlog missing date fails"
 rm "$TMP/_devlog/b.md"
