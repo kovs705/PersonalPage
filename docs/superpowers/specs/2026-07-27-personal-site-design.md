@@ -252,7 +252,7 @@ Five layouts extend `base.html`.
 | `/writing/` | `page` | Articles + devlog + external entries merged, newest first, filter chips |
 | `/writing/:name/` | `article` | Bone paper, editorial serif, prev/next, linked project if any |
 | `/devlog/` | `page` | Dense chronological rows grouped by month, each tagged with its project |
-| `/devlog/:name/` | `article` + `.is-entry` | Same layout, modifier class tightens measure to 60ch and drops the article-scale display heading. Shows "entry 7 of 14 in the BagLog build log" with in-project prev/next |
+| `/devlog/:slug/` | `article` + `.is-entry` | Same layout, modifier class tightens measure to 60ch and drops the article-scale display heading. Shows "entry 7 of 14 in the BagLog build log" with in-project prev/next |
 | `/projects/` | `page` | All projects grouped by `kind`, then `status`; compact "Gists & tools" outbound block from `_data/tools.yml` at the bottom |
 | `/projects/:name/` | `project` | Name, tagline, version, license, install line with copy button, description, screenshots, attached build log |
 | `/about/` | `page` | Prose bio in his own voice, photo, how he works, contact links: email, GitHub, Telegram, LinkedIn |
