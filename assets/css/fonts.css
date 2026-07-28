@@ -1,0 +1,13 @@
+/* Self-hosted. No CDN request, no third-party dependency. */
+@font-face{font-family:"Cabinet Grotesk";src:url("../fonts/CabinetGrotesk-Extrabold.woff2") format("woff2");
+  font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("../fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("../fonts/JetBrainsMono-Medium.woff2") format("woff2");
+  font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Source Serif 4";src:url("../fonts/SourceSerif4-Regular.otf.woff2") format("woff2");
+  font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Source Serif 4";src:url("../fonts/SourceSerif4-Semibold.otf.woff2") format("woff2");
+  font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Source Serif 4";src:url("../fonts/SourceSerif4-It.otf.woff2") format("woff2");
+  font-weight:400;font-style:italic;font-display:swap}
