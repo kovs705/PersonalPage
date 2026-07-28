@@ -1,0 +1,17 @@
+@media print{
+  .site-header,.site-footer,.clack,.prose-nav,.prose-tags{display:none !important}
+  .grain::before,.grain-paper::before{display:none !important}
+  html,body{background:#fff !important;color:#000 !important}
+  .bone-surface{background:#fff !important;padding:0 !important}
+  .prose{max-width:none;font-size:10.5pt;line-height:1.45;color:#000}
+  .prose-head h1{font-size:20pt}
+  .lede{font-size:11pt;color:#000}
+  .kicker{font-size:8.5pt;color:#000}
+  .prose h2{font-size:12.5pt;margin:14pt 0 5pt;border-bottom:.5pt solid #000;padding-bottom:2pt}
+  .prose h3{font-size:11pt;margin:9pt 0 2pt}
+  .prose p,.prose li{margin-bottom:4pt}
+  .prose a{color:#000;text-decoration:none}
+  .prose a::after{content:""}
+  h2,h3{break-after:avoid}
+  @page{margin:14mm}
+}

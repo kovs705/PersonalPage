@@ -1,0 +1,17 @@
+---
+layout: base
+---
+<main class="bone-surface" id="main">
+  <article class="prose cv">
+    <header class="prose-head">
+      <h1>{{ site.author }}</h1>
+      <p class="lede">{{ site.tagline }}</p>
+      <p class="kicker">
+        Buenos Aires, Argentina · <a href="mailto:{{ site.email }}">{{ site.email }}</a>
+        · github.com/{{ site.social.github }} · linkedin.com/in/{{ site.social.linkedin }}
+      </p>
+    </header>
+    {{ content }}
+  </article>
+</main>
+<link rel="stylesheet" href="{{ '/assets/css/print.css' | relative_url }}" media="print">
