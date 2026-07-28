@@ -61,6 +61,10 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.03
 .lbl{display:flex;justify-content:space-between;gap:var(--s4);
   font:500 10px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;
   color:var(--meta);border-top:1px solid var(--line);padding-top:var(--s3);margin:var(--s7) 0 0}
+/* The first span of a .lbl is an <h2> for screen-reader navigation (see Task 8 fix), but must
+   stay pixel-identical to a plain span — override the global h1,h2,h3 display-font rule. */
+.lbl h2{font:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;
+  color:inherit;margin:0}
 
 /* Rows — the primary unit of the whole site */
 .row{display:grid;grid-template-columns:1fr auto;gap:var(--s4);align-items:baseline;
@@ -90,6 +94,13 @@ a.row:hover .row-title{color:var(--lime)}
 .copy:active{transform:translateY(1px)}
 .copy b{color:var(--lime);font-weight:500}
 .copy>span{min-width:0;overflow-wrap:anywhere}
+
+/* Inline copy control for list rows — keeps a row to one line (unlike .copy, which is a
+   full-width block used only on project detail pages). Always visible: a hover-only
+   control is unreachable for touch and confusing for keyboard users. */
+.copy-inline{font:inherit;font-size:inherit;color:var(--lime);background:none;border:0;
+  padding:0;margin:0;cursor:pointer;transition:transform var(--t-press) var(--ease)}
+.copy-inline:active{transform:translateY(1px)}
 
 /* Focus must always be obvious in a dense keyboard-navigable list. */
 :focus-visible{outline:2px solid var(--lime);outline-offset:2px}

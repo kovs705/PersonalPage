@@ -12,8 +12,8 @@
       information a developer actually wants before installing.
     {%- endcomment -%}
     {% if p.status == 'coming-soon' %}coming soon{% else %}{{ p.license | default: 'no licence' }}{% endif %}
+    {% if p.repo %} · <button class="copy-inline" type="button"
+        aria-label="Copy clone URL for {{ p.title }}"
+        data-copy="https://github.com/{{ p.repo }}.git"><span data-copy-label>copy</span></button>{% endif %}
   </span>
 </div>
-{% if p.repo %}
-{% include copy-button.html repo=p.repo name=p.title %}
-{% endif %}

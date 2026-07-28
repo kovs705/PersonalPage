@@ -25,7 +25,7 @@ layout: base
 
   {% assign log = site.devlog | where: "project", page.slug | sort: "date" | reverse %}
   {% if log.size > 0 %}
-    <div class="lbl"><span>BUILD LOG</span><span>{{ log.size }} ENTR{% if log.size == 1 %}Y{% else %}IES{% endif %}</span></div>
+    <div class="lbl"><h2>BUILD LOG</h2><span>{{ log.size }} ENTR{% if log.size == 1 %}Y{% else %}IES{% endif %}</span></div>
     {% for e in log %}{% include entry-row.html e=e %}{% endfor %}
   {% endif %}
 </main>
