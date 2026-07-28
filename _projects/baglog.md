@@ -8,4 +8,4 @@ featured: true
 order: 1
 ---
 
-In active development. The devlog for this project is below.
+In active development.

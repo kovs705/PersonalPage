@@ -9,5 +9,5 @@ featured: true
 order: 6
 ---
 
-A text editor component, for UIKit and SwiftUI, that shows the AI tokens
-available as you type.
+A text editor component for UIKit and SwiftUI, with an indicator showing how
+many AI tokens remain.
