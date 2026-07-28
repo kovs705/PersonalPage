@@ -15,7 +15,5 @@
   </span>
 </div>
 {% if p.repo %}
-<button class="copy" type="button" data-copy="https://github.com/{{ p.repo }}.git">
-  <span>https://github.com/{{ p.repo }}.git</span><b data-copy-label>copy</b>
-</button>
+{% include copy-button.html repo=p.repo name=p.title %}
 {% endif %}

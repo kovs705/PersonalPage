@@ -15,6 +15,7 @@ dek: "Seven packages you can install now, three apps in progress, and a handful 
 <div class="lbl"><span>02 / IN PROGRESS</span><span>APPS</span></div>
 {% for p in apps %}{% include package-row.html p=p %}{% endfor %}
 
+{% if site.data.tools and site.data.tools.size > 0 %}
 <div class="lbl"><span>03 / GISTS &amp; TOOLS</span><span>EXTERNAL</span></div>
 {% for t in site.data.tools %}
 <a class="row" href="{{ t.url }}" rel="noreferrer">
@@ -22,3 +23,4 @@ dek: "Seven packages you can install now, three apps in progress, and a handful 
   <span class="row-meta">↗</span>
 </a>
 {% endfor %}
+{% endif %}

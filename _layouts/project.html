@@ -16,9 +16,7 @@ layout: base
       <a class="btn" href="https://github.com/{{ page.repo }}" rel="noreferrer">View on GitHub →</a>
     </div>
     <div style="margin-top:var(--s4)">
-      <button class="copy" type="button" data-copy="https://github.com/{{ page.repo }}.git">
-        <span>https://github.com/{{ page.repo }}.git</span><b data-copy-label>copy</b>
-      </button>
+      {% include copy-button.html repo=page.repo name=page.title %}
     </div>
     {% endif %}
   </div>

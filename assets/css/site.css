@@ -66,9 +66,10 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.03
 .row{display:grid;grid-template-columns:1fr auto;gap:var(--s4);align-items:baseline;
   padding:var(--s3) 0;border-bottom:1px solid var(--ink-2)}
 .row-title{font-size:14.5px;font-weight:500}
-.row-title em{font-style:normal;font-weight:400;color:var(--dim)}
+.row-title em{font-style:normal;font-weight:400;color:var(--meta)}
 .row-meta{font-size:11px;color:var(--meta);letter-spacing:.04em;white-space:nowrap}
 a.row:hover .row-title{color:var(--lime)}
+.row-title a:hover,.row-title a:focus-visible{color:var(--lime)}
 .row-date{font-size:11px;color:var(--meta)}
 
 /* Chunky physical controls: hard offset shadow, press drops 1px. */
@@ -84,10 +85,11 @@ a.row:hover .row-title{color:var(--lime)}
 
 .copy{font:400 11px/1 var(--mono);color:var(--dim);border:1px dashed var(--line-2);
   border-radius:var(--r-md);padding:8px 10px;display:flex;justify-content:space-between;
-  gap:var(--s4);width:100%;background:none;cursor:pointer;text-align:left;
+  gap:var(--s4);width:100%;min-width:0;background:none;cursor:pointer;text-align:left;
   transition:transform var(--t-press) var(--ease)}
 .copy:active{transform:translateY(1px)}
 .copy b{color:var(--lime);font-weight:500}
+.copy>span{min-width:0;overflow-wrap:anywhere}
 
 /* Focus must always be obvious in a dense keyboard-navigable list. */
 :focus-visible{outline:2px solid var(--lime);outline-offset:2px}
