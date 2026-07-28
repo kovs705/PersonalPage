@@ -47,6 +47,11 @@ Diagnosed from the live page, so the redesign targets real causes rather than as
 | 7 | Repo stays `PersonalPage`; subpath URL | Owner's choice. Requires strict `baseurl` discipline — see §8.1. |
 | 8 | `/about/` and `/cv/` split, print stylesheet, no PDF file | Read by different people with different questions. A print stylesheet cannot drift out of date because it is the same content. |
 | 9 | Graphite/Acid Lime shell, bone paper articles | Density and tactility serve scanning; quiet serif serves reading. Different jobs, not a compromise. |
+| 10 | Featured projects taken verbatim from the profile README; Dragula excluded | Owner's own curation beats inference. See §3.7. |
+| 11 | Projects split by `kind` into packages and apps | Shipped installables and in-development apps are read differently, and apps are the natural devlog subjects. |
+| 12 | Existing dev.to/Habr article linked, not republished | Avoids duplicate content competing with an already-ranking page. See §3.9. |
+| 13 | GoatCounter analytics included | The peer-led strategy is unmeasurable without it. Cookieless, one script tag, trivially removable. See §3.10. |
+| 14 | No search, comments, dark/light toggle, or PDF CV | See §12. |
 
 ### 2.1 The constraint tension, stated plainly
 
@@ -80,6 +85,7 @@ _includes/    head.html header.html footer.html figure.html note.html
 _articles/    <slug>.md                  → /writing/:name/
 _devlog/      YYYY-MM-DD-<slug>.md       → /devlog/:name/
 _projects/    <slug>.md                  → /projects/:name/
+_data/        tools.yml external_writing.yml
 assets/css/   site.css article.css rouge.css print.css
 assets/js/    clack.js copy.js tilt.js filter.js
 assets/fonts/ *.woff2
@@ -117,7 +123,7 @@ Uniform treatment means one Liquid pattern everywhere, clean slugs, and no date 
 # _devlog/2026-03-12-gesture-conflict.md
 title: "The gesture conflict took four days"   # always quoted
 date: 2026-03-12                                # REQUIRED
-project: dragula                                # optional; joins to _projects/dragula.md
+project: baglog                                 # optional; joins to _projects/baglog.md
 tags: [swiftui, gestures]
 
 # _articles/native-drag-and-drop.md
@@ -125,18 +131,19 @@ title: "Making drag & drop feel native in SwiftUI"
 date: 2026-03-10                                # REQUIRED
 summary: "One sentence."                        # REQUIRED — listings, meta description, OG card
 image: hero.png                                 # optional; assets/img/articles/<slug>/
-project: dragula                                # optional
+project: baglog                                 # optional
 tags: [swiftui]
 
-# _projects/dragula.md — required: title, tagline, repo, license, status
-title: "Dragula"
-tagline: "Reorderable drag & drop for SwiftUI"
-repo: kovs705/Dragula
-version: "1.2.0"
+# _projects/clackable.md
+title: "Clackable"
+tagline: "Duolingo and Nintendo sound feel, for SwiftUI"
+repo: kovs705/Clackable
+kind: package             # package | app
+version: "0.4.2"          # optional
 license: MIT
-status: active            # active | maintained | archived
+status: active            # active | maintained | archived | coming-soon
 featured: true            # surfaces on the homepage
-order: 1                  # homepage ordering among featured
+order: 2                  # ordering within its kind
 ```
 
 **Required fields, enforced by `validate-content.sh`:**
@@ -145,7 +152,7 @@ order: 1                  # homepage ordering among featured
 |---|---|
 | `_devlog` | `title`, `date` |
 | `_articles` | `title`, `date`, `summary` |
-| `_projects` | `title`, `tagline`, `repo`, `license`, `status` |
+| `_projects` | `title`, `tagline`, `kind`, `status` (`repo` required unless `status: coming-soon`) |
 
 Devlog entries need no `summary` — listings and the feed use Jekyll's auto-excerpt (first paragraph). Articles require one because it also becomes the meta description and the unfurl card text, where an auto-excerpt reads badly.
 
@@ -168,11 +175,64 @@ Devlog entries need no `summary` — listings and the feed use Jekyll's auto-exc
 
 Reading live release data from the GitHub API would require client-side JS, which forfeits the prebuilt-HTML property that motivated the whole platform choice, and anonymous API calls are rate-limited. Updating one front-matter line when tagging a release is the cheaper trade.
 
-### 3.7 Project curation
+### 3.7 Project curation — final
 
-80 public repos are not enumerated. `featured: true` selects 5–8 with real descriptions and installable value. Starting set, to be confirmed by the owner during implementation:
+80 public repos are not enumerated. The featured set is taken **verbatim from the owner's GitHub profile README**, which is his own curation and a better source than inference. `Dragula` is explicitly excluded at his request; `equatable` and `SwiftStarter` are dropped because they do not appear on his curated list.
 
-Dragula, Clackable, equatable, GoldenHour, PreviewDebugger, SwiftStarter.
+This splits into two `kind` values, which is an improvement over one flat list — shipped installable packages and apps in development are read differently, and the apps are the natural subjects of a devlog.
+
+**`kind: package`** — seven, all shipped and installable:
+
+| Slug | Tagline |
+|---|---|
+| `goldenhour` | Sun position, twilight phases, golden & blue hours, sky gradient colours |
+| `clackable` | Duolingo and Nintendo sound feel, for SwiftUI |
+| `tokenedittttor` | Text editor that shows available AI tokens (UIKit/SwiftUI) |
+| `notchtransition` | Custom navigation transition from the iPhone notch |
+| `previewdebugger` | Accessibility, UI and locale in your SwiftUI preview environment |
+| `accessdenied` | Hide sensitive content in SwiftUI |
+| `mdedittttor` | Markdown editor package (UIKit/SwiftUI) |
+
+**`kind: app`** — three in progress, `status: coming-soon`:
+
+| Slug | Note |
+|---|---|
+| `baglog` | In active development |
+| `squidnote` | Squiddy-Labs; App Store submission pending |
+| `obsidian-wall` | App Store submission pending |
+
+All ten get `featured: true`. Seven dense mono rows plus three cost almost nothing in a row-based layout, and the homepage carries two labelled blocks — `01 / PACKAGES` and `02 / IN PROGRESS` — rather than one undifferentiated list.
+
+`AccessDenied`, `Clackable`, `GoldenHour`, and `PreviewDebugger` are the four pinned on his profile, so those take `order: 1–4` within packages.
+
+### 3.8 Gists and tools
+
+The profile README lists six standalone resources that are genuinely useful but are not projects: `Plist2Hex.py`, the iOS 26 Glass gist, `KMP-git-ignore`, `iOSScripts`, `Xcode15-RuntimeHeaders`, and the useful-links gist.
+
+These live in `_data/tools.yml` and render as a compact outbound-link block at the bottom of `/projects/`. No new route, no new template, no collection — they are link rows, and treating them as projects would dilute the ten that matter.
+
+### 3.9 Existing published writing
+
+One article already exists: *Abstraction in Swift — a comparative look at Kotlin and Swift*, published on dev.to (EN) and Habr (RU).
+
+It is **not** copied into `_articles/`. Republishing text that already ranks elsewhere creates duplicate content competing with itself, and the dev.to version has existing authority. Instead, `_data/external_writing.yml` holds entries of `{title, date, url, venue, summary}`, and the `/writing/` index concatenates them into the merged list as outbound rows marked with their venue. No local page is generated, so there is nothing to conflict.
+
+```liquid
+{% assign all = site.articles | concat: site.devlog | sort: "date" | reverse %}
+{%- comment -%} external rows merge in the same list, rendered as outbound {%- endcomment -%}
+```
+
+This also means the writing index is not empty on day one, which matters given §1's accepted risk.
+
+### 3.10 Analytics — in scope, GoatCounter
+
+Included, decided on the owner's behalf, and worth justifying because it is the one place this spec accepts a third-party request after going to the trouble of self-hosting fonts.
+
+The site's entire strategy is peer-led: publish, get found, accumulate an audience. Without numbers there is no way to distinguish "nobody is reading this" from "people are reading and not saying anything," and those two situations call for opposite responses. Flying blind on the one metric the strategy depends on is the worse trade.
+
+**GoatCounter** rather than Google Analytics or Plausible: free for personal use, sets no cookies, needs no consent banner, collects no personal data, and ships as one `<script defer>` with no bundle. It is removable by deleting a single line from `_includes/head.html`, and nothing else in the site depends on it.
+
+Explicitly not added: any consent banner. There is nothing to consent to, and a cookie dialog on a personal site is exactly the kind of chrome §1 identifies as the problem.
 
 ---
 
@@ -182,14 +242,14 @@ Five layouts extend `base.html`.
 
 | Route | Layout | Contents |
 |---|---|---|
-| `/` | `home` | Hero with knockout headline, featured packages with copy buttons, latest 6 writing entries, short bio strip, contact footer |
-| `/writing/` | `page` | Articles + devlog merged, newest first, filter chips |
+| `/` | `home` | Hero with knockout headline; `01 / PACKAGES` (7 rows, copy buttons); `02 / IN PROGRESS` (3 app rows); `03 / WRITING` (latest 6); short bio strip; contact footer |
+| `/writing/` | `page` | Articles + devlog + external entries merged, newest first, filter chips |
 | `/writing/:name/` | `article` | Bone paper, editorial serif, prev/next, linked project if any |
 | `/devlog/` | `page` | Dense chronological rows grouped by month, each tagged with its project |
-| `/devlog/:name/` | `article` + `.is-entry` | Same layout, modifier class tightens measure to 60ch and drops the article-scale display heading. Shows "entry 7 of 14 in the Dragula log" with in-project prev/next |
-| `/projects/` | `page` | All projects grouped by `status` |
+| `/devlog/:name/` | `article` + `.is-entry` | Same layout, modifier class tightens measure to 60ch and drops the article-scale display heading. Shows "entry 7 of 14 in the BagLog build log" with in-project prev/next |
+| `/projects/` | `page` | All projects grouped by `kind`, then `status`; compact "Gists & tools" outbound block from `_data/tools.yml` at the bottom |
 | `/projects/:name/` | `project` | Name, tagline, version, license, install line with copy button, description, screenshots, attached build log |
-| `/about/` | `page` | Prose bio, photo, how you work, contact links |
+| `/about/` | `page` | Prose bio in his own voice, photo, how he works, contact links: email, GitHub, Telegram, LinkedIn |
 | `/cv/` | `cv` | Structured history; `print.css` makes ⌘P produce a clean document |
 | `/tags/` | `page` | Everything grouped by tag, anchor-addressable |
 | `/404.html` | `page` | Not found |
@@ -204,6 +264,19 @@ Five layouts extend `base.html`.
 ### 4.2 Filters are progressive enhancement
 
 `/writing/` renders every row in HTML. `filter.js` only hides rows. With JS disabled the page degrades to "everything visible," which is the correct failure.
+
+### 4.3 Voice, and where personality lives
+
+The owner's GitHub profile README already has the right voice — *"A happy dad | Apple platform developer | average Nintendo enjoyer | microcontroller and single-board computers fan"* — and its five-language greeting (Japanese, Russian, Finnish, Spanish, English) is a genuine, specific human detail. That is worth far more than any of PVresume's stat cards, and it is unmistakably not generated.
+
+Placement is deliberate, because personality in the wrong place undermines the seriousness the whole design is built for:
+
+- **`/about/`** carries the human voice, close to the README's own phrasing.
+- **`/404.html`** carries the humour. A 404 is the one page where being funny costs nothing.
+- **The homepage stays factual** — version numbers, dates, licences. It earns credibility first.
+- **Article bodies** are the owner's voice, unconstrained. §8 applies to site chrome and marketing copy, not to his writing.
+
+The five-language greeting belongs on `/about/`, not the homepage, and it is decoration in the permitted sense: it carries real information about the person.
 
 ---
 
@@ -279,7 +352,7 @@ Four modules, hand-written, zero dependencies, all `defer`. **Total budget: unde
 
 | Module | Behaviour |
 |---|---|
-| `clack.js` | WebAudio synthesizes the click — no audio file ships. Filtered noise burst, ~12ms decay envelope, two variants for down/up so it reads as *clack* rather than *beep*. Toggle in the nav, state in `localStorage` under `clack`, **default off**. Fires only on real interaction, so it never trips autoplay policy. The toggle label links to the Clackable repo. |
+| `clack.js` | WebAudio synthesizes the click — no audio file ships. Filtered noise burst, ~12ms decay envelope, two variants for down/up so it reads as *clack* rather than *beep*. Toggle in the nav, state in `localStorage` under `clack`, **default off**. Fires only on real interaction, so it never trips autoplay policy. The toggle label links to the Clackable repo — whose stated purpose is *"Duolingo and Nintendo sound feel for SwiftUI,"* making the toggle a literal demonstration of the package rather than a decorative gimmick. |
 | `copy.js` | `navigator.clipboard` with `execCommand` fallback. Button morphs to a confirmed state for 1.4s. |
 | `tilt.js` | Pointer-driven card tilt, hard-capped at 3°, gated behind `@media (hover:hover) and (pointer:fine)`. |
 | `filter.js` | `/writing/` filter chips. |
@@ -325,7 +398,7 @@ Checkable rules, enforced at review:
 Publishing a devlog entry:
 
 ```bash
-tools/new-devlog.sh "The gesture conflict took four days" dragula
+tools/new-devlog.sh "The gesture conflict took four days" baglog
 # creates _devlog/2026-03-12-the-gesture-conflict-took-four-days.md with front matter filled
 # write Markdown, drop images into assets/img/devlog/<slug>/
 tools/optimize-image.sh assets/img/devlog/<slug>/*.png
@@ -414,9 +487,8 @@ This is the acceptance test for the entire platform decision. If it fails, Jekyl
 
 Deliberately excluded. Each is cheap to add later; none is needed to ship.
 
-- **Search** — not useful below roughly 50 entries.
-- **Comments** — requires a third-party service and moderation.
-- **Analytics** — no default. GoatCounter or Plausible can be added as a single script tag.
+- **Search** — not useful below roughly 50 entries, and the writing index renders complete so ⌘F already works.
+- **Comments** — requires a third-party service and ongoing moderation for little return at this size.
 - **Dark/light toggle** — the shell is dark and articles are bone by design. A toggle would fight the design rather than serve it.
 - **Multi-language** — see decision 5.
 - **Live GitHub API data** — see §3.6.
