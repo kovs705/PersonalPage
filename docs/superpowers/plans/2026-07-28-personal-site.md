@@ -978,8 +978,32 @@ Create the remaining six with the same structure and these values:
 | `tokenedittttor.md` | `"TokenEdittttor"` | `"Text editor that shows available AI tokens (UIKit/SwiftUI)"` | `kovs705/TokenEdittttor` | 6 |
 | `mdedittttor.md` | `"MDEdittttor"` | `"Markdown editor package (UIKit/SwiftUI)"` | `kovs705/MDEdittttor` | 7 |
 
-All seven use `kind: package`, `license: MIT`, `status: active`, `featured: true`. Each needs a
-one- or two-sentence body. Orders 1–4 are the four repos pinned on the owner's profile.
+All seven use `kind: package`, `status: active`, `featured: true`. Each needs a one- or two-sentence
+body. Orders 1–4 are the four repos pinned on the owner's profile.
+
+**Licences are per-repo, NOT uniformly MIT.** An earlier draft of this plan asserted `license: MIT`
+for all seven; two of them have no licence at all. Verified against
+`https://api.github.com/repos/kovs705/<name>` → `license.spdx_id`:
+
+| repo | actual | front matter |
+|---|---|---|
+| AccessDenied, GoldenHour, PreviewDebugger, NotchTransition, TokenEdittttor | `MIT` | `license: MIT` |
+| **Clackable**, **MDEdittttor** | `null` — no `LICENSE` file in the repo | **omit `license:` entirely** |
+
+Omission, not `license: none` or `license: ""`. This matters more than it looks: the site's premise is
+that every rendered row is a fact a reader can check, so asserting MIT on a repo with no licence is
+the one defect class that undermines everything else on the page. Note that Clackable's own README
+renders a shields.io "License: MIT" badge pointing at a file that does not exist — the owner's README
+is aspirational there, which is exactly why the site must not copy the claim.
+
+Re-verify these before writing the files; a licence may legitimately have been added since.
+
+**Bodies must be sourced, not inferred.** Write only what the repo description or README actually
+states. A review caught "shows the AI tokens available *as you type*" for TokenEdittttor — the editor
+and the token indicator are documented, but the live-update behaviour was invented. When the source
+does not say, write one shorter sentence instead of two. For BagLog the owner's README says only
+"Yet another ambitious project, but this is it" — so `In active development.` is the honest body, and
+inventing a purpose would be worse than saying little.
 
 - [ ] **Step 3: Create the three in-progress apps**
 
@@ -1106,7 +1130,12 @@ Expected: FAIL — no `projects.md` yet.
   </span>
   <span class="row-meta">
     {% if p.version %}v{{ p.version }} · {% endif %}
-    {% if p.status == 'coming-soon' %}coming soon{% else %}{{ p.license }}{% endif %}
+    {%- comment -%}
+      Two packages genuinely have no licence (see Task 6), so this must say so rather than
+      render blank — a silently empty cell reads as an oversight, and "no licence" is
+      information a developer actually wants before installing.
+    {%- endcomment -%}
+    {% if p.status == 'coming-soon' %}coming soon{% else %}{{ p.license | default: 'no licence' }}{% endif %}
   </span>
 </div>
 {% if p.repo %}
