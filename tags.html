@@ -1,0 +1,20 @@
+---
+layout: page
+title: Tags
+section: writing
+permalink: /tags/
+dek: "Everything, grouped. GitHub Pages can't generate per-tag pages without an unsupported plugin, so this is one page with anchors."
+---
+
+{% assign all = site.articles | concat: site.devlog %}
+{% assign tags = all | map: "tags" | compact | join: "," | split: "," | uniq | sort %}
+
+<div class="chips">
+{% for t in tags %}<a class="chip" href="#{{ t | slugify }}">#{{ t }}</a>{% endfor %}
+</div>
+
+{% for t in tags %}
+  <div class="lbl" id="{{ t | slugify }}"><h2>#{{ t }}</h2><span></span></div>
+  {% assign tagged = all | where_exp: "e", "e.tags contains t" | sort: "date" | reverse %}
+  {% for e in tagged %}{% include entry-row.html e=e %}{% endfor %}
+{% endfor %}
