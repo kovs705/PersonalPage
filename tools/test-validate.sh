@@ -34,6 +34,17 @@ printf -- '---\ntitle: "Mixed line"\ndate: 2026-03-12\n---\n<a href="{{ "/ok/" |
 expect 1 "broken absolute path on a line that also has a Liquid link fails"
 rm "$TMP/_devlog/i.md"
 
+# CRLF regression: without tr -d '\r' in frontmatter(), a valid CRLF file
+# false-fails on missing title/date because "---\r" never matches "---".
+printf -- '---\r\ntitle: "CRLF is fine"\r\ndate: 2026-03-12\r\n---\r\nbody\r\n' > "$TMP/_devlog/j.md"
+expect 0 "CRLF line endings still parse as front matter"
+rm "$TMP/_devlog/j.md"
+
+# Duplicate-key regression: Psych uses last-key-wins, so a bad second title must be caught.
+printf -- '---\ntitle: Fine\ntitle: Unquoted: colon\ndate: 2026-03-12\n---\n' > "$TMP/_devlog/k.md"
+expect 1 "malformed duplicate title key is caught even when it is not first"
+rm "$TMP/_devlog/k.md"
+
 printf -- '---\ntitle: "No date"\n---\nbody\n' > "$TMP/_devlog/b.md"
 expect 1 "devlog missing date fails"
 rm "$TMP/_devlog/b.md"

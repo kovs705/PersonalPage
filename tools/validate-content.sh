@@ -24,11 +24,16 @@ check_common() {
   has_key "$f" title || err "$f: missing 'title'"
   has_key "$f" date  || err "$f: missing 'date'"
   # A title containing ':' must be quoted, or the YAML parser breaks the build.
-  local v; v="$(frontmatter "$f" | sed -nE 's/^title:[[:space:]]*(.*)$/\1/p' | head -1)"
-  case "$v" in
-    \"*|\'*) ;;                                    # quoted — legal, whatever it contains
-    *:*) err "$f: title contains ':' and is not quoted — this breaks the build" ;;
-  esac
+  # Check EVERY title: line, not just the first. Psych applies last-key-wins on duplicate
+  # keys, so inspecting only the first can pass a file whose build-time value is malformed.
+  # Note: an unterminated quote (title: "foo) is treated as quoted and accepted — that case
+  # fails loudly at build time rather than silently, so it is out of scope for this guard.
+  while IFS= read -r v; do
+    case "$v" in
+      \"*|\'*) ;;                                  # quoted — legal, whatever it contains
+      *:*) err "$f: title contains ':' and is not quoted — this breaks the build" ;;
+    esac
+  done < <(frontmatter "$f" | sed -nE 's/^title:[[:space:]]*(.*)$/\1/p')
   # project: must resolve to a real _projects/<slug>.md
   local p; p="$(frontmatter "$f" | sed -nE "s/^project:[[:space:]]*['\"]?([A-Za-z0-9_-]+)['\"]?.*/\1/p")"
   if [ -n "$p" ] && ! echo " $known_projects " | grep -q " $p "; then
