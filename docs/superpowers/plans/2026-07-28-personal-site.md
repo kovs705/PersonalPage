@@ -81,6 +81,7 @@ These were checked on this machine before writing the plan. Do not re-litigate t
 | `_includes/footer.html` | Contact links |
 | `_includes/entry-row.html` | One writing row — used by home, `/writing/`, `/devlog/`, project pages |
 | `_includes/package-row.html` | One project row with copy button |
+| `_includes/copy-button.html` | Shared copy control; `copy.js` depends on its data-attribute contract |
 | `_includes/figure.html`, `note.html`, `video.html` | Rich content in Markdown |
 | `assets/css/site.css` | Tokens, reset, shell, rows, controls |
 | `assets/css/article.css` | Bone paper reading surface |
@@ -700,9 +701,10 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.03
 .row{display:grid;grid-template-columns:1fr auto;gap:var(--s4);align-items:baseline;
   padding:var(--s3) 0;border-bottom:1px solid var(--ink-2)}
 .row-title{font-size:14.5px;font-weight:500}
-.row-title em{font-style:normal;font-weight:400;color:var(--dim)}
+.row-title em{font-style:normal;font-weight:400;color:var(--meta)}
 .row-meta{font-size:11px;color:var(--meta);letter-spacing:.04em;white-space:nowrap}
 a.row:hover .row-title{color:var(--lime)}
+.row-title a:hover,.row-title a:focus-visible{color:var(--lime)}
 .row-date{font-size:11px;color:var(--meta)}
 
 /* Chunky physical controls: hard offset shadow, press drops 1px. */
@@ -718,10 +720,11 @@ a.row:hover .row-title{color:var(--lime)}
 
 .copy{font:400 11px/1 var(--mono);color:var(--dim);border:1px dashed var(--line-2);
   border-radius:var(--r-md);padding:8px 10px;display:flex;justify-content:space-between;
-  gap:var(--s4);width:100%;background:none;cursor:pointer;text-align:left;
+  gap:var(--s4);width:100%;min-width:0;background:none;cursor:pointer;text-align:left;
   transition:transform var(--t-press) var(--ease)}
 .copy:active{transform:translateY(1px)}
 .copy b{color:var(--lime);font-weight:500}
+.copy>span{min-width:0;overflow-wrap:anywhere}
 
 /* Focus must always be obvious in a dense keyboard-navigable list. */
 :focus-visible{outline:2px solid var(--lime);outline-offset:2px}
@@ -1124,7 +1127,13 @@ git commit -m "content: ten curated projects and tools data"
 ## Task 7: Project layout, package row, and projects index
 
 **Files:**
-- Create: `_layouts/project.html`, `_includes/package-row.html`, `_includes/entry-row.html`, `projects.md`
+- Create: `_layouts/project.html`, `_includes/copy-button.html`, `_includes/package-row.html`,
+  `_includes/entry-row.html`, `projects.html`
+
+**Note `projects.html`, not `projects.md`.** The body is pure Liquid and HTML with no Markdown prose,
+and kramdown auto-wraps a non-block `<button>` in a `<p>`, which put accidental 15px UA-default
+margins around every copy button. `.html` skips kramdown entirely. The same applies to `writing.md`,
+`devlog.md`, and `tags.md` in Tasks 11 and 15 — those are also pure Liquid and should be `.html`.
 
 - [ ] **Step 1: Write the assertion first**
 
@@ -1136,6 +1145,19 @@ tools/assert.sh "projects index groups packages" '01 / PACKAGES' _site/projects/
 Expected: FAIL — no `projects.md` yet.
 
 - [ ] **Step 2: Write the includes**
+
+`_includes/copy-button.html` — expects `include.repo` and `include.name`. Extracted because the same
+markup is needed by both the package row and the project page, and Task 12's `copy.js` depends on the
+exact `data-copy` / `data-copy-label` contract — divergence between two copies would silently break
+one of them. The `aria-label` matters: without it the accessible name is the raw clone URL, so a
+screen-reader user tabbing `/projects/` hears eight long near-identical URLs read out in full.
+
+```html
+<button class="copy" type="button" aria-label="Copy clone URL for {{ include.name }}"
+        data-copy="https://github.com/{{ include.repo }}.git">
+  <span>https://github.com/{{ include.repo }}.git</span><b data-copy-label>copy</b>
+</button>
+```
 
 `_includes/package-row.html` — expects `include.p`:
 
@@ -1157,9 +1179,7 @@ Expected: FAIL — no `projects.md` yet.
   </span>
 </div>
 {% if p.repo %}
-<button class="copy" type="button" data-copy="https://github.com/{{ p.repo }}.git">
-  <span>https://github.com/{{ p.repo }}.git</span><b data-copy-label>copy</b>
-</button>
+{% include copy-button.html repo=p.repo name=p.title %}
 {% endif %}
 ```
 
@@ -1199,9 +1219,7 @@ layout: base
       <a class="btn" href="https://github.com/{{ page.repo }}" rel="noreferrer">View on GitHub →</a>
     </div>
     <div style="margin-top:var(--s4)">
-      <button class="copy" type="button" data-copy="https://github.com/{{ page.repo }}.git">
-        <span>https://github.com/{{ page.repo }}.git</span><b data-copy-label>copy</b>
-      </button>
+      {% include copy-button.html repo=page.repo name=page.title %}
     </div>
     {% endif %}
   </div>
@@ -1216,7 +1234,7 @@ layout: base
 </main>
 ```
 
-- [ ] **Step 4: Write `projects.md`**
+- [ ] **Step 4: Write `projects.html`**
 
 ```markdown
 ---
@@ -1236,6 +1254,7 @@ dek: "Seven packages you can install now, three apps in progress, and a handful 
 <div class="lbl"><span>02 / IN PROGRESS</span><span>APPS</span></div>
 {% for p in apps %}{% include package-row.html p=p %}{% endfor %}
 
+{% if site.data.tools and site.data.tools.size > 0 %}
 <div class="lbl"><span>03 / GISTS &amp; TOOLS</span><span>EXTERNAL</span></div>
 {% for t in site.data.tools %}
 <a class="row" href="{{ t.url }}" rel="noreferrer">
@@ -1243,6 +1262,7 @@ dek: "Seven packages you can install now, three apps in progress, and a handful 
   <span class="row-meta">↗</span>
 </a>
 {% endfor %}
+{% endif %}
 ```
 
 - [ ] **Step 5: Run the assertions to verify they pass**
@@ -1260,7 +1280,8 @@ Expected: three `PASS` lines and `validate-content: OK`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add _layouts/project.html _includes/package-row.html _includes/entry-row.html projects.md
+git add _layouts/project.html _includes/copy-button.html _includes/package-row.html \
+        _includes/entry-row.html projects.html
 git commit -m "feat: project pages and projects index"
 ```
 
