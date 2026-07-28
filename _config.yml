@@ -22,7 +22,7 @@ collections:
     permalink: /writing/:name/
   devlog:
     output: true
-    permalink: /devlog/:name/
+    permalink: /devlog/:slug/
   projects:
     output: true
     permalink: /projects/:name/
