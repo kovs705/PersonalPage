@@ -24,6 +24,24 @@ There is no unit-test framework here, so the discipline is adapted rather than d
 
 **Non-negotiable rule throughout:** every internal path goes through `{{ '/path' | relative_url }}`. A bare `href="/writing/"` works nowhere, because the site is served from the `/PersonalPage` subpath. Task 2 builds the guard that catches this.
 
+**Every top-level page needs an explicit `permalink:`.** Jekyll's pretty collection permalinks apply
+only to collections. A plain page at `projects.md` with no `permalink` builds to `_site/projects.html`,
+**not** `_site/projects/index.html` — so `/projects/` 404s while `/projects.html` works. This bit
+Task 7 during implementation. Affected pages and their required values:
+
+| file | `permalink:` |
+|---|---|
+| `projects.md` | `/projects/` |
+| `writing.md` | `/writing/` |
+| `devlog.md` | `/devlog/` |
+| `tags.md` | `/tags/` |
+| `about.md` | `/about/` |
+| `cv.md` | `/cv/` |
+
+`index.html`, `404.html` (`permalink: /404.html`) and `feed.xml` (`permalink: /feed.xml`) are already
+correct. The failure is at least loud rather than silent: each task's assertion targets
+`_site/<name>/index.html`, so a forgotten `permalink` fails the assertion with a missing file.
+
 ---
 
 ## Verified environment facts
@@ -1167,7 +1185,7 @@ Expected: FAIL — no `projects.md` yet.
 layout: base
 ---
 <main class="wrap grain" id="main">
-  <div class="hero" style="padding-bottom:var(--s5)">
+  <div class="hero hero-tight">
     <h1>{{ page.title }}</h1>
     <p class="dek">{{ page.tagline }}</p>
     <div class="chips">
@@ -1205,6 +1223,7 @@ layout: base
 layout: page
 title: Projects
 section: projects
+permalink: /projects/
 dek: "Seven packages you can install now, three apps in progress, and a handful of gists."
 ---
 
@@ -1699,6 +1718,7 @@ Expected: FAIL.
 layout: page
 title: Writing
 section: writing
+permalink: /writing/
 dek: "Articles when something deserves the full argument. Devlog when it doesn't."
 ---
 
@@ -1733,6 +1753,7 @@ with `Time` dates. The external data block stays separate precisely because its 
 layout: page
 title: Devlog
 section: writing
+permalink: /devlog/
 dek: "Short entries, dated, often mid-problem. Entries tagged with a project also collect on that project's page."
 ---
 
@@ -1971,6 +1992,7 @@ layout: article
 surface: bone
 section: about
 title: "About"
+permalink: /about/
 date: 2026-07-28
 ---
 
@@ -2071,6 +2093,7 @@ layout: cv
 surface: bone
 section: about
 title: "CV — Eugene Rozhkov"
+permalink: /cv/
 date: 2026-07-28
 ---
 
@@ -2197,6 +2220,7 @@ by any seed content, so asserting on it would pass vacuously later.)
 layout: page
 title: Tags
 section: writing
+permalink: /tags/
 dek: "Everything, grouped. GitHub Pages can't generate per-tag pages without an unsupported plugin, so this is one page with anchors."
 ---
 
