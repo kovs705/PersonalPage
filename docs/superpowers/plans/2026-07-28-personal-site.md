@@ -32,9 +32,9 @@ Task 7 during implementation. Affected pages and their required values:
 | file | `permalink:` |
 |---|---|
 | `projects.md` | `/projects/` |
-| `writing.md` | `/writing/` |
-| `devlog.md` | `/devlog/` |
-| `tags.md` | `/tags/` |
+| `writing.html` | `/writing/` |
+| `devlog.html` | `/devlog/` |
+| `tags.html` | `/tags/` |
 | `about.md` | `/about/` |
 | `cv.md` | `/cv/` |
 
@@ -1161,8 +1161,8 @@ git commit -m "content: ten curated projects and tools data"
 
 **Note `projects.html`, not `projects.md`.** The body is pure Liquid and HTML with no Markdown prose,
 and kramdown auto-wraps a non-block `<button>` in a `<p>`, which put accidental 15px UA-default
-margins around every copy button. `.html` skips kramdown entirely. The same applies to `writing.md`,
-`devlog.md`, and `tags.md` in Tasks 11 and 15 — those are also pure Liquid and should be `.html`.
+margins around every copy button. `.html` skips kramdown entirely. The same applies to `writing.html`,
+`devlog.html`, and `tags.html` in Tasks 11 and 15 — those are also pure Liquid, so they are `.html` too.
 
 - [ ] **Step 1: Write the assertion first**
 
@@ -1431,10 +1431,12 @@ layout: base
 <main class="bone-surface grain-paper" id="main">
   <article class="prose {% if page.collection == 'devlog' %}is-entry{% endif %}">
     <header class="prose-head">
+      {% if page.collection %}
       <p class="kicker">
         {% if page.collection == 'devlog' %}Devlog{% else %}Article{% endif %}
         · <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %B %Y" }}</time>
       </p>
+      {% endif %}
       <h1>{{ page.title }}</h1>
       {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
 
@@ -1750,7 +1752,7 @@ git commit -m "content: seed article, devlog entry, external writing data"
 ## Task 11: Writing index, devlog index, and the filter
 
 **Files:**
-- Create: `writing.md`, `devlog.md`, `assets/js/filter.js`
+- Create: `writing.html`, `devlog.html`, `assets/js/filter.js`  (pure Liquid — `.html` skips kramdown)
 
 - [ ] **Step 1: Write the assertion first**
 
@@ -1760,7 +1762,7 @@ tools/build.sh >/dev/null && tools/assert.sh "writing index merges both collecti
 
 Expected: FAIL.
 
-- [ ] **Step 2: Write `writing.md`**
+- [ ] **Step 2: Write `writing.html`**
 
 ```markdown
 ---
@@ -1795,7 +1797,7 @@ dek: "Articles when something deserves the full argument. Devlog when it doesn't
 `site.articles | concat: site.devlog | sort: "date"` is safe — both sides are Jekyll documents
 with `Time` dates. The external data block stays separate precisely because its dates are strings.
 
-- [ ] **Step 3: Write `devlog.md`**
+- [ ] **Step 3: Write `devlog.html`**
 
 ```markdown
 ---
@@ -1852,7 +1854,7 @@ Expected: four `PASS` lines.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add writing.md devlog.md assets/js/filter.js
+git add writing.html devlog.html assets/js/filter.js
 git commit -m "feat: writing and devlog indexes with filter"
 ```
 
@@ -2250,7 +2252,7 @@ git commit -m "feat: CV page with print stylesheet"
 ## Task 15: Tags page and 404
 
 **Files:**
-- Create: `tags.md`, `404.html`
+- Create: `tags.html`, `404.html`  (pure Liquid — `.html` skips kramdown)
 
 - [ ] **Step 1: Write the assertion first**
 
@@ -2261,7 +2263,7 @@ tools/build.sh >/dev/null && tools/assert.sh "tags page groups by tag" 'id="css"
 Expected: FAIL. (`css` is a real tag on the Task 10 seed devlog entry; `swiftui` is not yet used
 by any seed content, so asserting on it would pass vacuously later.)
 
-- [ ] **Step 2: Write `tags.md`**
+- [ ] **Step 2: Write `tags.html`**
 
 `jekyll-archives` is not available on GitHub Pages, so one page carries every tag as an anchor.
 
@@ -2282,7 +2284,7 @@ dek: "Everything, grouped. GitHub Pages can't generate per-tag pages without an 
 </div>
 
 {% for t in tags %}
-  <div class="lbl" id="{{ t | slugify }}"><span>#{{ t }}</span><span></span></div>
+  <div class="lbl" id="{{ t | slugify }}"><h2>#{{ t }}</h2><span></span></div>
   {% assign tagged = all | where_exp: "e", "e.tags contains t" | sort: "date" | reverse %}
   {% for e in tagged %}{% include entry-row.html e=e %}{% endfor %}
 {% endfor %}
@@ -2300,7 +2302,7 @@ permalink: /404.html
 dek: "This path doesn't exist. Statistically that's my fault, not yours."
 ---
 
-<p style="color:var(--dim);max-width:34em;padding:var(--s4) 0">
+<p class="bio">
   I moved something, mistyped a link, or shipped a devlog entry at 2am. Any of those is
   plausible. Nothing here is your doing.
 </p>
@@ -2324,7 +2326,7 @@ Expected: two `PASS` lines.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add tags.md 404.html
+git add tags.html 404.html
 git commit -m "feat: tags page and 404"
 ```
 
@@ -2445,7 +2447,7 @@ file="_devlog/${date}-${slug}.md"
   echo "---"
   echo
 } > "$file"
-mkdir -p "assets/img/devlog/${date}-${slug}"
+mkdir -p "assets/img/devlog/${slug}"
 echo "$file"
 ```
 
@@ -2485,7 +2487,15 @@ set -euo pipefail
 command -v cwebp >/dev/null || { echo "cwebp not found: brew install webp"; exit 1; }
 for src in "$@"; do
   [ -f "$src" ] || { echo "skip (not a file): $src"; continue; }
-  base="${src%.*}"; out="${base}.webp"; tmp="$(mktemp -t oi).png"
+  base="${src%.*}"; out="${base}.webp"
+  # mktemp -d + trap, not `tmp="$(mktemp -t oi).png"`: appending a suffix to a captured
+  # mktemp path never renames the file mktemp actually created, so that first file
+  # leaks silently on every run, success or failure. A scratch dir avoids that, and the
+  # trap (not just a manual rm at the end) means a mid-loop failure under set -e still
+  # cleans up — same lesson fetch-fonts.sh already learned about set -e vs cleanup.
+  tmpdir="$(mktemp -d -t oi)"
+  trap 'rm -rf "$tmpdir"' EXIT
+  tmp="$tmpdir/src.png"
   sips -s format png "$src" --out "$tmp" >/dev/null
   w=$(sips -g pixelWidth "$tmp" | awk '/pixelWidth/{print $2}')
   [ "$w" -gt 1600 ] && sips -Z 1600 "$tmp" >/dev/null
@@ -2496,7 +2506,8 @@ for src in "$@"; do
     [ "$sz" -le 256000 ] && break
     q=$((q-8))
   done
-  rm -f "$tmp"
+  rm -rf "$tmpdir"
+  trap - EXIT
   echo "$out — $(( $(wc -c < "$out") / 1024 ))KB (q=$q)"
   [ "$src" != "$out" ] && echo "  original kept; delete it before committing if unused"
 done

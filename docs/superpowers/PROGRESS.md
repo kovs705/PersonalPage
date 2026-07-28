@@ -23,7 +23,18 @@ reviewer, then a code-quality reviewer, fixing and re-reviewing until both pass.
 | 6. Projects collection content | ✅ Done, reviewed |
 | 7. Project layout & projects index | ✅ Done, reviewed |
 | 8. Homepage | ✅ Done, reviewed — Lighthouse 99 perf / 100 a11y |
-| 9–18 | ⬜ Not started |
+| 9. Article reading surface | ✅ Done, reviewed |
+| 10. Seed content | ✅ Done, reviewed |
+| 11. Writing & devlog indexes | ✅ Done, reviewed |
+| 12. Clack, copy, tilt JS | ✅ Done — 2583 bytes minified against a 4KB budget |
+| 13. About page | ✅ Done |
+| 14. CV page & print stylesheet | ⚠️ Built, **blocked on owner** — employment dates/employers |
+| 15. Tags page & 404 | ✅ Done |
+| 16. Hand-written Atom feed | ✅ Done — validates, both collections present |
+| 17. Authoring tools & analytics | ✅ Done — GoatCounter code still to be supplied |
+| 18. Deploy & full verification | ⬜ **Blocked** — needs owner (see below) |
+
+All eleven routes plus `/feed.xml` and `/sitemap.xml` build locally.
 
 Live check: `tools/build.sh` then serve `_site/` under a `/PersonalPage/` prefix (paths are
 baseurl-absolute, so a root-served copy renders unstyled). `tools/serve.sh` does this for you at
@@ -59,6 +70,18 @@ attention when their tasks come up:
    back to `system-ui` 800. To fix it manually: download the family from
    <https://www.fontshare.com/fonts/cabinet-grotesk> and copy the 800 weight woff2 to that path.
    Nothing is blocked by leaving it.
+
+## Task 18 is blocked on three owner decisions
+
+1. **CV employment dates and employers** — `cv.md` carries two
+   `**Role dates to be filled in by owner.**` markers. A `grep` guard in Task 14 Step 7 deliberately
+   fails while they are present, blocking deploy. "Healthcare startup (NDA)" is a fine substitute if a
+   company cannot be named.
+2. **GoatCounter code** (optional) — register at <https://www.goatcounter.com>, then set
+   `goatcounter: "<code>"` in `_config.yml`. Empty disables analytics cleanly; nothing breaks.
+3. **Making the site public** — Task 18 pushes `build-site`, merges to `main`, and enables GitHub Pages.
+   That publishes the site, so it needs the owner's explicit go-ahead rather than being done
+   automatically.
 
 ## Owner action still required
 
