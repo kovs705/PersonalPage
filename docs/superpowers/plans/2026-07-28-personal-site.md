@@ -2149,16 +2149,35 @@ permalink: /cv/
 date: 2026-07-28
 ---
 
+Mid iOS developer, 4+ years shipping production mobile apps. Kotlin Multiplatform integration and
+SwiftUI product delivery, mostly in MedTech and service apps. Modular architecture, CI/CD automation,
+distributed international teams.
+
 ## Experience
 
-### iOS Developer — healthcare
-**Role dates to be filled in by owner.** Shipped and maintained iOS applications in a
-regulated healthcare context. SwiftUI and UIKit, offline-tolerant data flows, and interfaces
-used by non-technical staff under time pressure.
+### iOS Developer — Lifetime Health Plus Care Pvt Ltd
+**February 2024 – present** · Remote, Bengaluru, India
 
-### iOS Developer — logistics
-**Role dates to be filled in by owner.** Mobile work for logistics operations: scanning
-flows, route and shipment handling, and screens used in the field rather than at a desk.
+- Build and maintain a production iOS app for ordering home healthcare services in India.
+- Ship features in SwiftUI with Kotlin Multiplatform bridges for shared cross-platform logic.
+- Own the CI/CD flow — Xcode Cloud, GitHub, and custom pre/post-build scripts.
+- Released on the App Store:
+  [Lifetime Health](https://apps.apple.com/jp/app/lifetime-health/id6496204102?l=en-US).
+
+### Lead iOS Developer — RESHENIE LLC
+**June 2023 – March 2024** · Remote, Saint Petersburg, Russia
+
+- Led two iOS developers across several MedTech projects.
+- Improved application performance and reinforced architecture quality across the portfolio.
+- Built a reusable Kotlin Multiplatform core library to speed delivery across products.
+- Established CI/CD pipelines in self-hosted GitLab for delivery consistency.
+
+### Contract iOS Developer — Individual Entrepreneur
+**March 2022 – November 2022** · Saint Petersburg, Russia
+
+- Modernised a legacy logistics application for cargo transportation status tracking.
+- Integrated SwiftUI into an existing UIKit codebase.
+- Migrated desktop-only functionality to mobile.
 
 ## Open source
 
@@ -2170,10 +2189,16 @@ sound), **PreviewDebugger** (accessibility and locale in SwiftUI previews),
 ## Technical
 
 **Platforms:** iOS, iPadOS, macOS
-**Languages:** Swift, Kotlin, Objective-C (reading), Python, JavaScript
-**UI:** SwiftUI, UIKit, Swift macros, Core Location
+**Languages:** Swift, Kotlin (KMP)
+**UI:** SwiftUI, UIKit, SwiftData / Core Data
 **Cross-platform:** Kotlin Multiplatform
-**Tooling:** Xcode, Swift Package Manager, Git, Docker
+**Architecture:** Modular, with Tuist / XcodeGen
+**Delivery:** Xcode Cloud, GitHub Actions, GitLab CI, Swift Package Manager
+
+## Education
+
+**Togliatti State University** — Togliatti, Russia
+BSc Computer Science, remote. Expected graduation 2028.
 
 ## Writing
 
@@ -2227,16 +2252,24 @@ Then verify manually: open `http://localhost:4000/PersonalPage/cv/` via `tools/s
 ⌘P, and confirm the header, footer, and clack toggle are absent and the document is one to two
 clean pages.
 
-- [ ] **Step 6: Owner fills in employment dates and employers**
+- [x] **Step 6: Owner supplied employment dates and employers — RESOLVED**
 
-`cv.md` above ships with two role blocks whose **dates and employer names are marked as
-owner-supplied**. This is the only place in the plan where information is genuinely unavailable
-from the repository, the GitHub profile, or PVresume — none of them state employers or dates.
+This was the only genuinely unavailable information in the whole plan: nothing in the repository,
+the GitHub profile, or PVresume states employers or dates. The owner provided a CV PDF, and the
+real history turned out to be **three** roles, not the two this plan assumed — Lifetime Health
+Plus Care (Feb 2024–present), RESHENIE LLC as lead across MedTech projects (Jun 2023–Mar 2024),
+and a logistics modernisation contract (Mar–Nov 2022). Experience corrected to 4+ years, and
+education added.
 
-The owner must replace both `**Role dates to be filled in by owner.**` markers with real start
-and end dates, and add employer names or a deliberate description like "healthcare startup
-(NDA)" if the company cannot be named. A CV with a visible placeholder is worse than no CV
-page, so **this step blocks Task 18 Step 2 (deploy)**.
+**The phone number on the PDF was deliberately omitted.** It is appropriate on a document handed
+to a named recipient; a public page indexed by search engines is a different exposure, and email,
+Telegram and LinkedIn already cover contact. Apply the same judgement to anything else personal
+that arrives via a CV.
+
+**The CV also surfaced the strongest evidence the site was missing:** Lifetime Health is live on
+the App Store. For a site built on "every row is a fact you can check", a shipped app is the most
+checkable artifact there is, and it existed nowhere on the site. Now linked from `/about/` and
+`/cv/`.
 
 - [ ] **Step 7: Commit**
 
