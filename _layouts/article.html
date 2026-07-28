@@ -1,0 +1,50 @@
+---
+layout: base
+---
+<main class="bone-surface grain-paper" id="main">
+  <article class="prose {% if page.collection == 'devlog' %}is-entry{% endif %}">
+    <header class="prose-head">
+      <p class="kicker">
+        {% if page.collection == 'devlog' %}Devlog{% else %}Article{% endif %}
+        · <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %B %Y" }}</time>
+      </p>
+      <h1>{{ page.title }}</h1>
+      {% if page.summary %}<p class="lede">{{ page.summary }}</p>{% endif %}
+
+      {% if page.project %}
+        {% assign proj = site.projects | where: "slug", page.project | first %}
+        {% assign siblings = site.devlog | where: "project", page.project | sort: "date" %}
+        {% assign idx = 0 %}
+        {% for s in siblings %}{% if s.url == page.url %}{% assign idx = forloop.index %}{% endif %}{% endfor %}
+        {% if proj %}
+        <p class="in-project">
+          {% if idx > 0 %}Entry {{ idx }} of {{ siblings.size }} in the{% else %}Part of the{% endif %}
+          <a href="{{ proj.url | relative_url }}">{{ proj.title }}</a> build log
+        </p>
+        {% endif %}
+      {% endif %}
+    </header>
+
+    {{ content }}
+
+    {% if page.tags %}
+    <p class="prose-tags">
+      {% for t in page.tags %}<a href="{{ '/tags/' | relative_url }}#{{ t | slugify }}">#{{ t }}</a> {% endfor %}
+    </p>
+    {% endif %}
+
+    {% if page.project and siblings %}
+      {% assign previdx = idx | minus: 1 %}
+      {% assign nextidx = idx | plus: 1 %}
+      {% assign prev = null %}{% assign next = null %}
+      {% for s in siblings %}
+        {% if forloop.index == previdx %}{% assign prev = s %}{% endif %}
+        {% if forloop.index == nextidx %}{% assign next = s %}{% endif %}
+      {% endfor %}
+      <nav class="prose-nav">
+        {% if prev %}<a href="{{ prev.url | relative_url }}">← {{ prev.title }}</a>{% endif %}
+        {% if next %}<a href="{{ next.url | relative_url }}">{{ next.title }} →</a>{% endif %}
+      </nav>
+    {% endif %}
+  </article>
+</main>

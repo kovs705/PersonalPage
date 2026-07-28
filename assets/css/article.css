@@ -1,0 +1,67 @@
+/* The reading surface. Density and tactility stop at this boundary. */
+.bone-surface{background:var(--bone);color:var(--article-ink);
+  padding:var(--s8) var(--s5);position:relative}
+.grain-paper::before{content:"";position:absolute;inset:0;pointer-events:none;
+  opacity:.07;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.prose{position:relative;z-index:1;max-width:66ch;margin:0 auto;
+  font:400 19px/1.65 var(--serif)}
+.prose.is-entry{max-width:60ch;font-size:18px}
+
+.prose-head{margin-bottom:var(--s7)}
+.kicker{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+  color:#6E6A5C;margin:0 0 var(--s4)}
+.prose-head h1{font-family:var(--display);font-size:clamp(28px,5vw,42px);line-height:1.05;
+  color:var(--article-ink)}
+.prose.is-entry .prose-head h1{font-size:clamp(24px,4vw,32px)}
+.lede{font-size:20px;line-height:1.55;color:#4A463C;margin:var(--s4) 0 0}
+.in-project{font:400 13px/1.5 var(--mono);color:#6E6A5C;margin:var(--s4) 0 0}
+.in-project a{color:var(--tomato);text-decoration:underline;text-underline-offset:2px}
+
+.prose h2,.prose h3{font-family:var(--display);margin:var(--s7) 0 var(--s3);
+  color:var(--article-ink);line-height:1.15}
+.prose h2{font-size:27px}
+.prose h3{font-size:21px}
+.prose p{margin:0 0 var(--s5)}
+.prose a{color:var(--article-ink);text-decoration:underline;
+  text-decoration-color:var(--tomato);text-underline-offset:3px;text-decoration-thickness:2px}
+.prose ul,.prose ol{margin:0 0 var(--s5);padding-left:1.3em}
+.prose li{margin-bottom:var(--s2)}
+.prose blockquote{margin:var(--s5) 0;padding-left:var(--s4);
+  border-left:3px solid var(--tomato);color:#4A463C;font-style:italic}
+.prose hr{border:0;border-top:1px solid var(--bone-2);margin:var(--s7) 0}
+.prose code{font:400 .85em/1.5 var(--mono);background:rgba(21,20,15,.06);
+  padding:2px 5px;border-radius:var(--r-sm)}
+.prose pre{background:var(--ink);color:var(--paper);padding:var(--s4);
+  border-radius:var(--r-md);overflow-x:auto;font-size:13.5px;line-height:1.55;
+  margin:0 0 var(--s5)}
+.prose pre code{background:none;padding:0;font-size:inherit;color:inherit}
+.prose table{width:100%;border-collapse:collapse;font-size:16px;margin:0 0 var(--s5)}
+.prose th,.prose td{text-align:left;padding:var(--s2) var(--s3);
+  border-bottom:1px solid var(--bone-2)}
+
+figure{margin:var(--s6) 0}
+figure img{border-radius:var(--r-md);border:1px solid var(--bone-2)}
+figcaption{font:400 13px/1.5 var(--mono);color:#6E6A5C;margin-top:var(--s2)}
+
+.note{margin:var(--s5) 0;padding:var(--s4);border-radius:var(--r-md);
+  border-left:3px solid var(--tomato);background:rgba(21,20,15,.04);
+  font-size:17px;line-height:1.6}
+.note.info{border-left-color:#2B6E8A}
+.note.caution{border-left-color:#B8860B}
+.note>:last-child{margin-bottom:0}
+
+.prose-tags{font:400 13px/1.6 var(--mono);color:#6E6A5C;margin:var(--s7) 0 0}
+.prose-tags a{color:#6E6A5C;text-decoration:none}
+.prose-tags a:hover{color:var(--tomato)}
+.prose-nav{display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;
+  border-top:1px solid var(--bone-2);margin-top:var(--s6);padding-top:var(--s4);
+  font:400 14px/1.5 var(--mono)}
+.prose-nav a{color:var(--article-ink)}
+.prose-nav a:hover{color:var(--tomato)}
+
+/* Focus ring must be visible on bone too — lime would fail contrast here. */
+.bone-surface :focus-visible{outline:2px solid var(--tomato);outline-offset:2px}
+
+@media (max-width:640px){.bone-surface{padding:var(--s6) var(--s4)}.prose{font-size:17.5px}}

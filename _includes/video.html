@@ -1,0 +1,8 @@
+{% assign dir = page.collection | default: 'img' %}
+<figure>
+  <video controls preload="metadata" width="{{ include.width }}" height="{{ include.height }}"
+    {% if include.poster %}poster="{{ '/assets/img/' | append: dir | append: '/' | append: page.slug | append: '/' | append: include.poster | relative_url }}"{% endif %}>
+    <source src="{{ '/assets/img/' | append: dir | append: '/' | append: page.slug | append: '/' | append: include.src | relative_url }}" type="video/mp4">
+  </video>
+  {% if include.caption %}<figcaption>{{ include.caption }}</figcaption>{% endif %}
+</figure>

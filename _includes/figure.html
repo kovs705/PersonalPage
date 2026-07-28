@@ -1,0 +1,6 @@
+{% assign dir = page.collection | default: 'img' %}
+<figure>
+  <img src="{{ '/assets/img/' | append: dir | append: '/' | append: page.slug | append: '/' | append: include.src | relative_url }}"
+       alt="{{ include.alt }}" width="{{ include.width }}" height="{{ include.height }}" loading="lazy" decoding="async">
+  {% if include.caption %}<figcaption>{{ include.caption }}</figcaption>{% endif %}
+</figure>

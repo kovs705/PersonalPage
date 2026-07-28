@@ -1,0 +1,18 @@
+/* Rouge tokens, tuned for the dark code block on bone paper. */
+.highlight{background:none}
+.highlight .c,.highlight .c1,.highlight .cm,.highlight .cs{color:#6C7266;font-style:italic}
+.highlight .k,.highlight .kd,.highlight .kn,.highlight .kp,.highlight .kr,.highlight .kt{color:#C9F227}
+.highlight .kc{color:#C9F227}
+.highlight .s,.highlight .s1,.highlight .s2,.highlight .sb,.highlight .sc,.highlight .sd,
+.highlight .se,.highlight .sh,.highlight .si,.highlight .sx,.highlight .sr,.highlight .ss{color:#E8B84B}
+.highlight .m,.highlight .mf,.highlight .mh,.highlight .mi,.highlight .mo,.highlight .il{color:#7FD1B9}
+.highlight .n,.highlight .na,.highlight .nb,.highlight .nx{color:#E4E6E9}
+.highlight .nc,.highlight .nn,.highlight .no{color:#8ECBF0}
+.highlight .nf,.highlight .nd{color:#F3F0E7;font-weight:500}
+.highlight .nt{color:#C9F227}
+.highlight .nv,.highlight .vc,.highlight .vg,.highlight .vi{color:#E4E6E9}
+.highlight .o,.highlight .ow,.highlight .p{color:#9BA2AB}
+.highlight .err,.highlight .gr{color:#FF6B5E}
+.highlight .gi{color:#7FD1B9}
+.highlight .gd{color:#FF6B5E}
+.highlight .gh,.highlight .gu{color:#8ECBF0;font-weight:500}
