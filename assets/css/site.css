@@ -1,4 +1,5 @@
-@import url("fonts.css");
+/* fonts.css is linked directly in _includes/head.html, not @imported here — an @import
+   serialises the font CSS behind this file on the critical path. */
 
 :root{
   /* shell — dark, dense, mono-led */
@@ -93,6 +94,9 @@ a.row:hover .row-title{color:var(--lime)}
 
 /* Hero. Knockout is shell-only — lime never appears on bone (contrast). */
 .hero{padding:var(--s8) 0 var(--s7)}
+/* Index/section pages: shorter tail than the homepage hero. A class, not an inline style,
+   so the project layout can reuse it instead of copying a declaration. */
+.hero-tight{padding-bottom:var(--s5)}
 .hero h1{font-size:clamp(30px,6vw,50px);line-height:.99;max-width:16em}
 .hero h1 .knock{display:inline-block;color:var(--ink);background:var(--lime);
   padding:0 var(--s2);border-radius:var(--r-sm);transform:rotate(-2.2deg)}

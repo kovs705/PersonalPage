@@ -614,7 +614,8 @@ Expected: FAIL — missing file.
 - [ ] **Step 2: Write `assets/css/site.css`**
 
 ```css
-@import url("fonts.css");
+/* fonts.css is linked directly in _includes/head.html, not @imported here — an @import
+   serialises the font CSS behind this file on the critical path. */
 
 :root{
   /* shell — dark, dense, mono-led */
@@ -709,6 +710,9 @@ a.row:hover .row-title{color:var(--lime)}
 
 /* Hero. Knockout is shell-only — lime never appears on bone (contrast). */
 .hero{padding:var(--s8) 0 var(--s7)}
+/* Index/section pages: shorter tail than the homepage hero. A class, not an inline style,
+   so the project layout can reuse it instead of copying a declaration. */
+.hero-tight{padding-bottom:var(--s5)}
 .hero h1{font-size:clamp(30px,6vw,50px);line-height:.99;max-width:16em}
 .hero h1 .knock{display:inline-block;color:var(--ink);background:var(--lime);
   padding:0 var(--s2);border-radius:var(--r-sm);transform:rotate(-2.2deg)}
@@ -785,10 +789,16 @@ git commit -m "feat: design tokens, reset, tactility layer"
 - [ ] **Step 1: Write the assertion first**
 
 ```bash
-tools/build.sh >/dev/null && tools/assert.sh "nav uses baseurl" 'href="/PersonalPage/writing/"' _site/index.html
+tools/build.sh >/dev/null && tools/assert.sh "primary nav exists" 'aria-label="Primary"' _site/index.html
 ```
 
-Expected: FAIL — the placeholder `index.md` has no nav.
+Expected: FAIL — no header include exists yet.
+
+**Why this assertion and not a `baseurl` one.** The obvious choice —
+`assert.sh "nav uses baseurl" 'href="/PersonalPage/writing/"'` — does **not** discriminate here: the
+Task 1 placeholder homepage already contains a `relative_url` link to `/writing/`, so that pattern
+passes before any header exists. An assertion that cannot fail proves nothing. `aria-label="Primary"`
+appears only in the header this task creates.
 
 - [ ] **Step 2: Write the includes and layouts**
 
@@ -797,6 +807,13 @@ Expected: FAIL — the placeholder `index.md` has no nav.
 ```html
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{%- comment -%}
+  fonts.css is linked directly rather than @imported from site.css. A CSS @import is only
+  discovered after the importing sheet is fetched AND parsed, which serialised the font CSS
+  and its @font-face files behind site.css — measured at ~150ms of avoidable critical-path
+  delay. Linked here they fetch in parallel.
+{%- endcomment -%}
+<link rel="stylesheet" href="{{ '/assets/css/fonts.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
 {% if page.surface == 'bone' %}<link rel="stylesheet" href="{{ '/assets/css/article.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/assets/css/rouge.css' | relative_url }}">{% endif %}
@@ -804,7 +821,11 @@ Expected: FAIL — the placeholder `index.md` has no nav.
 <link rel="preload" as="font" type="font/woff2" crossorigin
       href="{{ '/assets/fonts/JetBrainsMono-Regular.woff2' | relative_url }}">
 {% seo %}
-{% if site.goatcounter != "" %}
+{%- comment -%}
+  Nil-safe on purpose: Liquid evaluates nil != "" as true, so a bare inequality would emit a
+  live script tag with an empty subdomain if this key were ever renamed or dropped.
+{%- endcomment -%}
+{% if site.goatcounter and site.goatcounter != "" %}
 <script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 {% endif %}
@@ -873,7 +894,7 @@ Expected: FAIL — the placeholder `index.md` has no nav.
 layout: base
 ---
 <main class="wrap grain" id="main">
-  <div class="hero" style="padding-bottom:var(--s5)">
+  <div class="hero hero-tight">
     <h1>{{ page.title }}</h1>
     {% if page.dek %}<p class="dek">{{ page.dek }}</p>{% endif %}
   </div>
@@ -881,7 +902,9 @@ layout: base
 </main>
 ```
 
-Replace `index.md` with a temporary shim so the assertion can pass:
+Replace **`index.html`** with a temporary shim so the assertion can pass. (The file is
+`index.html`, not `index.md` — Task 1 renamed it because kramdown silently escaped raw HTML inside
+a `.md` file while the build reported success.)
 
 ```markdown
 ---
@@ -1748,6 +1771,14 @@ tools/assert.sh "clack synthesizes audio" 'AudioContext' assets/js/clack.js
 ```
 
 Expected: FAIL — missing file.
+
+**One thing Task 5's review surfaced that this task must handle.** `header.html` hardcodes
+`aria-pressed="false"` on the toggle, and `site.css` styles the switch off `[aria-pressed="true"]`.
+A `defer`red script therefore leaves a returning visitor who enabled sound looking at the wrong
+switch position — and assistive tech announcing the wrong state — until the script runs. Restoring
+the stored state needs a **small blocking inline script in `head.html`**, the same pattern used to
+prevent dark-mode flash. `clack.js` keeps owning the audio and the click handler; only the initial
+state read has to happen before first paint.
 
 - [ ] **Step 2: Write `assets/js/clack.js`**
 

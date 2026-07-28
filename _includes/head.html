@@ -1,5 +1,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{%- comment -%}
+  fonts.css is linked directly rather than @imported from site.css. A CSS @import is only
+  discovered after the importing sheet is fetched AND parsed, which serialised the font CSS
+  and its @font-face files behind site.css — measured at ~150ms of avoidable critical-path
+  delay. Linked here they fetch in parallel.
+{%- endcomment -%}
+<link rel="stylesheet" href="{{ '/assets/css/fonts.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
 {% if page.surface == 'bone' %}<link rel="stylesheet" href="{{ '/assets/css/article.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/assets/css/rouge.css' | relative_url }}">{% endif %}
@@ -7,7 +14,11 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin
       href="{{ '/assets/fonts/JetBrainsMono-Regular.woff2' | relative_url }}">
 {% seo %}
-{% if site.goatcounter != "" %}
+{%- comment -%}
+  Nil-safe on purpose: Liquid evaluates nil != "" as true, so a bare inequality would emit a
+  live script tag with an empty subdomain if this key were ever renamed or dropped.
+{%- endcomment -%}
+{% if site.goatcounter and site.goatcounter != "" %}
 <script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 {% endif %}
