@@ -1,0 +1,24 @@
+---
+layout: page
+title: Projects
+section: projects
+permalink: /projects/
+dek: "Seven packages you can install now, three apps in progress, and a handful of gists."
+---
+
+{% assign packages = site.projects | where: "kind", "package" | sort: "order" %}
+{% assign apps = site.projects | where: "kind", "app" | sort: "order" %}
+
+<div class="lbl"><span>01 / PACKAGES</span><span>SWIFTPM</span></div>
+{% for p in packages %}{% include package-row.html p=p %}{% endfor %}
+
+<div class="lbl"><span>02 / IN PROGRESS</span><span>APPS</span></div>
+{% for p in apps %}{% include package-row.html p=p %}{% endfor %}
+
+<div class="lbl"><span>03 / GISTS &amp; TOOLS</span><span>EXTERNAL</span></div>
+{% for t in site.data.tools %}
+<a class="row" href="{{ t.url }}" rel="noreferrer">
+  <span class="row-title">{{ t.name }} <em>— {{ t.note }}</em></span>
+  <span class="row-meta">↗</span>
+</a>
+{% endfor %}

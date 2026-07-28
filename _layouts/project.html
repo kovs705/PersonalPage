@@ -1,0 +1,33 @@
+---
+layout: base
+---
+<main class="wrap grain" id="main">
+  <div class="hero hero-tight">
+    <h1>{{ page.title }}</h1>
+    <p class="dek">{{ page.tagline }}</p>
+    <div class="chips">
+      <span class="chip">{{ page.kind }}</span>
+      <span class="chip">{% if page.status == 'coming-soon' %}coming soon{% else %}{{ page.status }}{% endif %}</span>
+      {% if page.license %}<span class="chip">{{ page.license }}</span>{% endif %}
+      {% if page.version %}<span class="chip">v{{ page.version }}</span>{% endif %}
+    </div>
+    {% if page.repo %}
+    <div class="hero-cta">
+      <a class="btn" href="https://github.com/{{ page.repo }}" rel="noreferrer">View on GitHub →</a>
+    </div>
+    <div style="margin-top:var(--s4)">
+      <button class="copy" type="button" data-copy="https://github.com/{{ page.repo }}.git">
+        <span>https://github.com/{{ page.repo }}.git</span><b data-copy-label>copy</b>
+      </button>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="prose-dark">{{ content }}</div>
+
+  {% assign log = site.devlog | where: "project", page.slug | sort: "date" | reverse %}
+  {% if log.size > 0 %}
+    <div class="lbl"><span>BUILD LOG</span><span>{{ log.size }} ENTR{% if log.size == 1 %}Y{% else %}IES{% endif %}</span></div>
+    {% for e in log %}{% include entry-row.html e=e %}{% endfor %}
+  {% endif %}
+</main>

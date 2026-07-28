@@ -1,0 +1,21 @@
+{% assign p = include.p %}
+<div class="row" data-tilt>
+  <span class="row-title">
+    <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
+    <em>— {{ p.tagline }}</em>
+  </span>
+  <span class="row-meta">
+    {% if p.version %}v{{ p.version }} · {% endif %}
+    {%- comment -%}
+      Two packages genuinely have no licence (see Task 6), so this must say so rather than
+      render blank — a silently empty cell reads as an oversight, and "no licence" is
+      information a developer actually wants before installing.
+    {%- endcomment -%}
+    {% if p.status == 'coming-soon' %}coming soon{% else %}{{ p.license | default: 'no licence' }}{% endif %}
+  </span>
+</div>
+{% if p.repo %}
+<button class="copy" type="button" data-copy="https://github.com/{{ p.repo }}.git">
+  <span>https://github.com/{{ p.repo }}.git</span><b data-copy-label>copy</b>
+</button>
+{% endif %}

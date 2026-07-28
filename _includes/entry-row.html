@@ -1,0 +1,10 @@
+{% assign e = include.e %}
+{% assign kind = 'devlog' %}
+{% if e.collection == 'articles' %}{% assign kind = 'article' %}{% endif %}
+<a class="row" href="{{ e.url | relative_url }}" data-kind="{{ kind }}"
+   data-tags="{{ e.tags | join: ' ' }}">
+  <span class="row-title">{{ e.title }}</span>
+  <span class="row-meta">
+    {{ kind }} · {{ e.date | date: "%Y-%m-%d" }}{% if e.project %} · {{ e.project }}{% endif %}
+  </span>
+</a>
