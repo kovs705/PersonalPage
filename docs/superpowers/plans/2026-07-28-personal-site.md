@@ -87,7 +87,7 @@ These were checked on this machine before writing the plan. Do not re-litigate t
 | `assets/css/article.css` | Bone paper reading surface |
 | `assets/css/rouge.css` | Syntax highlighting |
 | `assets/css/print.css` | CV print |
-| `assets/js/clack.js`, `copy.js`, `tilt.js`, `filter.js` | Four independent enhancements |
+| `assets/js/clack.js`, `copy.js`, `filter.js` | Three independent enhancements (tilt removed after launch — see spec §13) |
 | `_data/tools.yml`, `_data/external_writing.yml` | Gists and externally-published writing |
 | `feed.xml` | Hand-written Atom merging both collections |
 
@@ -929,7 +929,6 @@ appears only in the header this task creates.
   {% include footer.html %}
   <script src="{{ '/assets/js/clack.js' | relative_url }}" defer></script>
   <script src="{{ '/assets/js/copy.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/js/tilt.js' | relative_url }}" defer></script>
   {% if page.section == 'writing' and page.layout == 'page' %}
   <script src="{{ '/assets/js/filter.js' | relative_url }}" defer></script>
   {% endif %}
@@ -1192,7 +1191,7 @@ screen-reader user tabbing `/projects/` hears eight long near-identical URLs rea
 
 ```html
 {% assign p = include.p %}
-<div class="row" data-tilt>
+<div class="row">
   <span class="row-title">
     <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
     <em>— {{ p.tagline }}</em>
@@ -1861,6 +1860,11 @@ git commit -m "feat: writing and devlog indexes with filter"
 ---
 
 ## Task 12: JavaScript enhancements — clack, copy, tilt
+
+> **`tilt.js` was removed after launch — do not reimplement it from the steps below.** The rows tilted
+> up to 3° on `pointermove`, which on a 912×48px row displaces the corners by ~24px and reads as jitter.
+> The owner confirmed it in use. `data-tilt`, the script, and its `<script>` tag are gone; the row hover
+> highlight is the only hover affordance. See spec §13. The clack and copy steps below are current.
 
 **Files:**
 - Create: `assets/js/clack.js`, `assets/js/copy.js`, `assets/js/tilt.js`

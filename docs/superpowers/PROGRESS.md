@@ -26,13 +26,13 @@ reviewer, then a code-quality reviewer, fixing and re-reviewing until both pass.
 | 9. Article reading surface | ✅ Done, reviewed |
 | 10. Seed content | ✅ Done, reviewed |
 | 11. Writing & devlog indexes | ✅ Done, reviewed |
-| 12. Clack, copy, tilt JS | ✅ Done — 2583 bytes minified against a 4KB budget |
+| 12. Clack & copy JS | ✅ Done — tilt removed after launch (spec §13); 3646 bytes unminified |
 | 13. About page | ✅ Done |
 | 14. CV page & print stylesheet | ⚠️ Built, **blocked on owner** — employment dates/employers |
 | 15. Tags page & 404 | ✅ Done |
 | 16. Hand-written Atom feed | ✅ Done — validates, both collections present |
 | 17. Authoring tools & analytics | ✅ Done — GoatCounter code still to be supplied |
-| 18. Deploy & full verification | ⬜ **Blocked** — needs owner (see below) |
+| 18. Deploy | ✅ **LIVE** at https://kovs705.github.io/PersonalPage/ — Pages enabled by owner |
 
 All eleven routes plus `/feed.xml` and `/sitemap.xml` build locally.
 

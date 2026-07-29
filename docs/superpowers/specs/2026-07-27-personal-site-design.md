@@ -87,7 +87,7 @@ _devlog/      YYYY-MM-DD-<slug>.md       → /devlog/:slug/
 _projects/    <slug>.md                  → /projects/:name/
 _data/        tools.yml external_writing.yml
 assets/css/   site.css article.css rouge.css print.css
-assets/js/    clack.js copy.js tilt.js filter.js
+assets/js/    clack.js copy.js filter.js
 assets/fonts/ *.woff2
 assets/img/<collection>/<slug>/
 index.html about.md cv.md writing.html devlog.html projects.html tags.html 404.html
@@ -363,7 +363,6 @@ Four modules, hand-written, zero dependencies, all `defer`. **Total budget: unde
 |---|---|
 | `clack.js` | WebAudio synthesizes the click — no audio file ships. Filtered noise burst, ~12ms decay envelope, two variants for down/up so it reads as *clack* rather than *beep*. Toggle in the nav, state in `localStorage` under `clack`, **default off**. Fires only on real interaction, so it never trips autoplay policy. The toggle label links to the Clackable repo — whose stated purpose is *"Duolingo and Nintendo sound feel for SwiftUI,"* making the toggle a literal demonstration of the package rather than a decorative gimmick. |
 | `copy.js` | `navigator.clipboard` with `execCommand` fallback. Button morphs to a confirmed state for 1.4s. |
-| `tilt.js` | Pointer-driven card tilt, hard-capped at 3°, gated behind `@media (hover:hover) and (pointer:fine)`. |
 | `filter.js` | `/writing/` filter chips. |
 
 ### 7.2 CSS-only motion
@@ -379,7 +378,7 @@ Building this the other way — hidden by default, revealed by animation — ren
 
 ### 7.4 Reduced motion
 
-`prefers-reduced-motion: reduce` disables tilt, scroll reveals, and view transitions. **Press states remain** — an 80ms depth change is not vestibular motion, and it is the point of the design.
+`prefers-reduced-motion: reduce` disables scroll reveals and view transitions. **Press states remain** — an 80ms depth change is not vestibular motion, and it is the point of the design.
 
 ---
 
@@ -468,7 +467,7 @@ A static site with no build step has no test suite. That is a real weakness rath
 ### 11.3 Manual matrix
 
 - JavaScript disabled — all content reachable, filters degrade to everything-visible, no blank sections.
-- `prefers-reduced-motion: reduce` — tilt, reveals, and transitions off; press states intact.
+- `prefers-reduced-motion: reduce` — reveals and transitions off; press states intact.
 - Keyboard-only tab through the homepage and writing index — focus visible at every stop.
 - 320px and 1440px viewports.
 - Print preview of `/cv`.
@@ -503,3 +502,18 @@ Deliberately excluded. Each is cheap to add later; none is needed to ship.
 - **Live GitHub API data** — see §3.6.
 - **PDF CV file** — replaced by the print stylesheet on `/cv/`.
 - **Custom domain** — `kovs705.github.io` root and a custom domain both remain available later. Moving from the subpath to either requires updating `baseurl` and re-running §11.
+
+---
+
+## 13. Changes after launch
+
+**Cursor-reactive tilt removed (2026-07-29).** Rows tilted up to 3° on `pointermove`. A review had
+already measured the geometry problem — a 3° tilt on a 912×48px row displaces its corners by ~24px,
+versus ~6px for a card of similar area — and the owner confirmed it in use: on wide, short rows it reads
+as jitter rather than intent. `data-tilt`, `assets/js/tilt.js`, and its `<script>` tag are gone; the row
+hover highlight (`--paper` → `--lime`) is the only hover affordance. Site JS dropped from 4494 to 3646
+bytes unminified.
+
+The tactility argument is unaffected: it rested on grain, hard offset shadows, and the 80ms press-drop,
+all of which remain. Tilt was the one mechanism whose benefit depended on element proportions the design
+does not actually use.
