@@ -717,10 +717,10 @@ a.row:hover .row-title{color:var(--lime)}
 /* The anchor wraps title + tagline and fills its grid column, so the whole left side of a row
    is one click target rather than just the name. */
 .row-title a{display:block}
+/* Only the name lights up. The tagline keeps --meta on hover by design — it is supporting text,
+   and .row-title em pinning its own colour is what makes that happen, so do not add an
+   `inherit` rule here. The whole anchor is still the click target either way. */
 .row-title a:hover,.row-title a:focus-visible{color:var(--lime)}
-/* .row-title em pins its own colour, which would otherwise survive the hover on the anchor and
-   leave the tagline grey while the name lit up — inherit so the row highlights as one unit. */
-.row-title a:hover em,.row-title a:focus-visible em{color:inherit}
 .row-date{font-size:11px;color:var(--meta)}
 
 /* Chunky physical controls: hard offset shadow, press drops 1px. */
