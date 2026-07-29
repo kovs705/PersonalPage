@@ -714,7 +714,13 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.03
 .row-title em{font-style:normal;font-weight:400;color:var(--meta)}
 .row-meta{font-size:11px;color:var(--meta);letter-spacing:.04em;white-space:nowrap}
 a.row:hover .row-title{color:var(--lime)}
+/* The anchor wraps title + tagline and fills its grid column, so the whole left side of a row
+   is one click target rather than just the name. */
+.row-title a{display:block}
 .row-title a:hover,.row-title a:focus-visible{color:var(--lime)}
+/* .row-title em pins its own colour, which would otherwise survive the hover on the anchor and
+   leave the tagline grey while the name lit up — inherit so the row highlights as one unit. */
+.row-title a:hover em,.row-title a:focus-visible em{color:inherit}
 .row-date{font-size:11px;color:var(--meta)}
 
 /* Chunky physical controls: hard offset shadow, press drops 1px. */
@@ -1192,9 +1198,13 @@ screen-reader user tabbing `/projects/` hears eight long near-identical URLs rea
 ```html
 {% assign p = include.p %}
 <div class="row">
+  {%- comment -%}
+    The tagline lives INSIDE the anchor so the whole title-and-description reads as one link
+    rather than a clickable name followed by dead text. The copy control is a sibling in
+    .row-meta, not nested here, because a <button> cannot legally sit inside an <a>.
+  {%- endcomment -%}
   <span class="row-title">
-    <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
-    <em>— {{ p.tagline }}</em>
+    <a href="{{ p.url | relative_url }}">{{ p.title }} <em>— {{ p.tagline }}</em></a>
   </span>
   <span class="row-meta">
     {% if p.version %}v{{ p.version }} · {% endif %}
